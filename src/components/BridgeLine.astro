@@ -1,0 +1,23 @@
+---
+// Abstract Shanghai ⇄ München link: two labelled nodes and travelling pulses. No map shapes (审图号 rule).
+interface Props { left: string; right: string; leftSub?: string; rightSub?: string }
+const { left, right, leftSub = 'UTC+8', rightSub = 'UTC+1' } = Astro.props;
+---
+<div class="relative w-full" aria-hidden="true">
+  <svg viewBox="0 0 400 90" class="w-full h-auto overflow-visible">
+    <defs>
+      <linearGradient id="br-g" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee" /><stop offset=".5" stop-color="#f59e0b" /><stop offset="1" stop-color="#8b5cf6" /></linearGradient>
+    </defs>
+    <path id="br-p" d="M40 55 C 140 5, 260 5, 360 55" fill="none" stroke="url(#br-g)" stroke-width="1.5" class="dash-flow" />
+    <path id="br-q" d="M360 55 C 260 95, 140 95, 40 55" fill="none" stroke="url(#br-g)" stroke-opacity=".35" stroke-width="1" />
+    <circle class="br-pulse" r="3" fill="#fff"><animateMotion dur="3.2s" repeatCount="indefinite"><mpath href="#br-p" /></animateMotion></circle>
+    <circle class="br-pulse" r="2.2" fill="#fcd34d"><animateMotion dur="4.4s" repeatCount="indefinite"><mpath href="#br-q" /></animateMotion></circle>
+    <circle cx="40" cy="55" r="16" fill="#22d3ee" fill-opacity=".12" /><circle cx="40" cy="55" r="6" fill="#22d3ee" />
+    <circle cx="360" cy="55" r="16" fill="#8b5cf6" fill-opacity=".14" /><circle cx="360" cy="55" r="6" fill="#8b5cf6" />
+  </svg>
+  <div class="flex justify-between font-mono-ui text-xs -mt-2">
+    <span class="text-cyan-200">{left}<span class="block text-slate-400">{leftSub}</span></span>
+    <span class="text-violet-200 text-right">{right}<span class="block text-slate-400">{rightSub}</span></span>
+  </div>
+</div>
+<style>@media (prefers-reduced-motion: reduce) { .br-pulse { display: none; } }</style>

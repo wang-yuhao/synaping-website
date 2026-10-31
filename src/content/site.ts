@@ -109,6 +109,68 @@ export const services: Service[] = [
   },
 ];
 
+type Engagement = { icon: 'search' | 'layers' | 'clock'; t: string; d: string; fit: string };
+export const engagement: Record<Locale, { kicker: string; title: string; lead: string; items: Engagement[] }> = {
+  zh: {
+    kicker: 'Engagement models',
+    title: '三种合作方式',
+    lead: '从一次诊断开始，按需要扩展为项目交付或长期服务。',
+    items: [
+      { icon: 'search', t: '诊断', d: '1–2 周梳理现状、目标与约束，输出架构方案、报价与里程碑。', fit: '适合：方向已定、方案未定' },
+      { icon: 'layers', t: '项目交付', d: '固定范围与里程碑，按周迭代，测试环境实时可见，交付含文档与交接。', fit: '适合：明确的建设目标' },
+      { icon: 'clock', t: '长期服务', d: '按月提供运维、监控、内容更新、安全升级与持续优化。', fit: '适合：上线后的稳定运营' },
+    ],
+  },
+  en: {
+    kicker: 'Engagement models',
+    title: 'Three ways to work with us',
+    lead: 'Start with an assessment, then extend into a project or an ongoing retainer.',
+    items: [
+      { icon: 'search', t: 'Assessment', d: '1–2 weeks to map the current state, goals and constraints, ending with an architecture plan, quote and milestones.', fit: 'Fits: direction set, solution open' },
+      { icon: 'layers', t: 'Project', d: 'Fixed scope and milestones, weekly iterations visible on staging, delivered with documentation and handover.', fit: 'Fits: a clear build goal' },
+      { icon: 'clock', t: 'Retainer', d: 'Monthly operations, monitoring, content updates, security upgrades and continuous improvement.', fit: 'Fits: running reliably after launch' },
+    ],
+  },
+  de: {
+    kicker: 'Zusammenarbeit',
+    title: 'Drei Formen der Zusammenarbeit',
+    lead: 'Beginnen Sie mit einer Analyse und erweitern Sie bei Bedarf zu einem Projekt oder laufender Betreuung.',
+    items: [
+      { icon: 'search', t: 'Analyse', d: '1–2 Wochen zu Ist-Zustand, Zielen und Rahmenbedingungen – mit Architekturplan, Angebot und Meilensteinen.', fit: 'Passt, wenn die Richtung steht, die Lösung aber offen ist' },
+      { icon: 'layers', t: 'Projekt', d: 'Fester Umfang und Meilensteine, wöchentliche Iterationen auf Staging, Übergabe mit Dokumentation.', fit: 'Passt bei einem klaren Vorhaben' },
+      { icon: 'clock', t: 'Betreuung', d: 'Monatlicher Betrieb, Monitoring, Inhaltspflege, Sicherheitsupdates und laufende Optimierung.', fit: 'Passt für den stabilen Betrieb nach dem Launch' },
+    ],
+  },
+};
+
+/** Terminal in the hero: this site's real release flow (see README "How changes reach production"). */
+export const pipeline = [
+  { k: 'cmd', a: 'git push origin claude/42-feature' },
+  { k: 'ok', a: 'build', b: 'astro · static · zh / en / de' },
+  { k: 'ok', a: 'check', b: 'typescript strict · ad-law word list' },
+  { k: 'ok', a: 'test', b: 'e2e · 0 third-party requests · 0 cookies' },
+  { k: 'ok', a: 'sign', b: 'ed25519 → github release' },
+  { k: 'run', a: 'deploy', b: 'staging → owner approval → production' },
+] as const;
+
+export const stackLayers: Record<Locale, { t: string; items: string[] }[]> = {
+  zh: [
+    { t: '网站与产品', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: '数据与 AI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: '云与运维', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+  en: [
+    { t: 'Web & product', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: 'Data & AI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: 'Cloud & ops', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+  de: [
+    { t: 'Web & Produkt', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: 'Daten & KI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: 'Cloud & Betrieb', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+};
+
 export const home = {
   zh: {
     title: '惟意科技 Synaping｜中国企业出海欧洲的数字技术伙伴',
@@ -134,6 +196,28 @@ export const home = {
     labsLead: '我们持续投入的技术研究，是服务能力的底座。',
     trust: ['工信部 ICP 备案', '上海 + 慕尼黑 双地团队', '惟意集团旗下品牌'],
     stackTitle: '常用技术',
+    terminalTitle: 'synaping.com · 发布流水线',
+    terminalCap: '本站真实的发布流程：每次变更都经过构建、测试、签名与人工审批。',
+    whyKicker: 'Why Synaping',
+    whyTitle: '为什么选择惟意科技',
+    why: [
+      { icon: 'globe', t: '中欧双地', d: '团队工作和生活在上海与慕尼黑，理解中国企业的决策方式，也熟悉欧洲客户的期待与习惯。' },
+      { icon: 'code', t: '工程优先', d: '以企业级数据平台与云架构的工程标准交付：版本控制、自动化测试、可回滚的发布。' },
+      { icon: 'shield', t: '合规内建', d: 'GDPR 与个人信息保护法的技术要求在架构阶段就纳入设计，而不是上线前临时补救。' },
+      { icon: 'users', t: '一个团队', d: '网站、数据与云由同一团队负责，减少多家供应商之间的沟通与对接成本。' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: '本站即样例',
+    stdLead: '我们对客户项目的要求，首先用在自己的网站上。以下每一项都由自动化测试或构建检查持续验证。',
+    std: [
+      { v: '0', t: '第三方请求', d: '字体、脚本与图片全部自托管' },
+      { v: '0', t: 'Cookie', d: '无追踪、无弹窗，访问即用' },
+      { v: '≤300 KB', t: '页面预算', d: '静态生成，弱网下也能快速打开' },
+      { v: 'Ed25519', t: '签名发布', d: '服务器只接受校验通过的构建' },
+      { v: '3', t: '语言版本', d: '中文、English、Deutsch' },
+      { v: 'AA', t: '无障碍目标', d: '按 WCAG 2.2 AA 设计，支持减少动态效果' },
+    ],
+    bridgeLead: '上海与慕尼黑两地协作，工作时段自然衔接：国内白天提出的问题，欧洲团队可以在当天继续推进。',
   },
   en: {
     title: 'Synaping | Digital technology partner for Chinese companies entering Europe',
@@ -159,6 +243,28 @@ export const home = {
     labsLead: 'Ongoing research that keeps our engineering sharp.',
     trust: ['ICP-registered in China', 'Teams in Shanghai and Munich', 'Part of the Weiyi group'],
     stackTitle: 'Technologies we use',
+    terminalTitle: 'synaping.com · release pipeline',
+    terminalCap: "This site's actual release flow: every change is built, tested, signed and approved by a human.",
+    whyKicker: 'Why Synaping',
+    whyTitle: 'Why work with us',
+    why: [
+      { icon: 'globe', t: 'China and Europe', d: 'Our people work and live in Shanghai and Munich: we understand how Chinese companies decide and what European buyers expect.' },
+      { icon: 'code', t: 'Engineering first', d: 'Delivered to the standards of enterprise data platforms and cloud architecture: version control, automated tests, reversible releases.' },
+      { icon: 'shield', t: 'Compliance by design', d: 'GDPR and PIPL technical requirements are part of the architecture from day one, not patched in before launch.' },
+      { icon: 'users', t: 'One team', d: 'Website, data and cloud from one team, without the overhead of coordinating several vendors.' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: 'This site is the sample',
+    stdLead: 'What we require for client projects, we apply to our own site first. Each item below is checked continuously by automated tests or build checks.',
+    std: [
+      { v: '0', t: 'Third-party requests', d: 'Fonts, scripts and images are all self-hosted' },
+      { v: '0', t: 'Cookies', d: 'No tracking, no consent banner' },
+      { v: '≤300 KB', t: 'Page budget', d: 'Static pages that load fast on weak networks' },
+      { v: 'Ed25519', t: 'Signed releases', d: 'The server only accepts verified builds' },
+      { v: '3', t: 'Languages', d: '中文, English, Deutsch' },
+      { v: 'AA', t: 'Accessibility target', d: 'Designed for WCAG 2.2 AA, honours reduced motion' },
+    ],
+    bridgeLead: 'Shanghai and Munich working hours hand over naturally: a question raised during the Chinese working day can move forward in Europe the same day.',
   },
   de: {
     title: 'Synaping | Technologiepartner für chinesische Unternehmen in Europa',
@@ -184,8 +290,33 @@ export const home = {
     labsLead: 'Laufende Forschung als Fundament unserer Arbeit.',
     trust: ['ICP-registriert in China', 'Teams in Shanghai und München', 'Teil der Weiyi-Gruppe'],
     stackTitle: 'Technologien',
+    terminalTitle: 'synaping.com · Release-Pipeline',
+    terminalCap: 'Der tatsächliche Release-Ablauf dieser Website: Jede Änderung wird gebaut, getestet, signiert und von einem Menschen freigegeben.',
+    whyKicker: 'Why Synaping',
+    whyTitle: 'Warum Synaping',
+    why: [
+      { icon: 'globe', t: 'China und Europa', d: 'Wir arbeiten und leben in Shanghai und München – wir kennen die Entscheidungswege chinesischer Unternehmen und die Erwartungen europäischer Kunden.' },
+      { icon: 'code', t: 'Engineering zuerst', d: 'Umgesetzt nach den Standards von Enterprise-Datenplattformen und Cloud-Architektur: Versionskontrolle, automatisierte Tests, umkehrbare Releases.' },
+      { icon: 'shield', t: 'Compliance by Design', d: 'Technische Anforderungen aus DSGVO und PIPL sind von Anfang an Teil der Architektur – nicht kurz vor dem Launch nachgerüstet.' },
+      { icon: 'users', t: 'Ein Team', d: 'Website, Daten und Cloud aus einer Hand, ohne Abstimmungsaufwand zwischen mehreren Dienstleistern.' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: 'Diese Website ist das Beispiel',
+    stdLead: 'Was wir für Kundenprojekte fordern, gilt zuerst für unsere eigene Website. Jeder Punkt wird laufend durch automatisierte Tests oder Build-Prüfungen kontrolliert.',
+    std: [
+      { v: '0', t: 'Drittanbieter-Anfragen', d: 'Schriften, Skripte und Bilder selbst gehostet' },
+      { v: '0', t: 'Cookies', d: 'Kein Tracking, kein Cookie-Banner' },
+      { v: '≤300 KB', t: 'Seitenbudget', d: 'Statische Seiten, schnell auch bei schwachem Netz' },
+      { v: 'Ed25519', t: 'Signierte Releases', d: 'Der Server akzeptiert nur verifizierte Builds' },
+      { v: '3', t: 'Sprachen', d: '中文, English, Deutsch' },
+      { v: 'AA', t: 'Barrierefreiheit', d: 'Ausgelegt auf WCAG 2.2 AA, respektiert reduzierte Bewegung' },
+    ],
+    bridgeLead: 'Die Arbeitszeiten in Shanghai und München greifen ineinander: Was am chinesischen Arbeitstag aufkommt, kann in Europa noch am selben Tag weiterlaufen.',
   },
 } satisfies L<Record<string, unknown>>;
+
+// matrix rows map to tiers: Starter = first 3, Growth = first 6, Data = all (mirrors the tier descriptions).
+export const kitTierRows = [3, 6, 8];
 
 export const kit = {
   zh: {

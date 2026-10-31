@@ -1,18 +1,28 @@
 ---
 import Logo from './Logo.astro';
 import { company, localePath, ui, type Locale } from '../i18n/ui';
+import { services } from '../content/site';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const t = ui[locale];
 const year = 2026;
+const full = locale !== 'de';
 ---
 <footer class="border-t border-white/5 mt-24">
-  <div class="mx-auto max-w-7xl px-5 py-12 grid gap-10 md:grid-cols-4 text-sm">
+  <div class="mx-auto max-w-7xl px-5 py-12 grid gap-10 md:grid-cols-5 text-sm">
     <div class="md:col-span-2 space-y-3">
       <Logo size={32} zh animate={false} />
       <p class="text-slate-400">{t.footerTagline}</p>
       <p class="text-slate-400">{company.legalNameZh}{locale !== 'zh' && <><br />{company.legalNameEn}</>}</p>
       <p class="text-slate-400"><a href={`mailto:${company.email}`} class="hover:text-white">{company.email}</a></p>
+      <p class="font-mono-ui text-xs text-slate-500">Shanghai · München</p>
+    </div>
+    <div>
+      <p class="text-slate-300 font-medium mb-3">{t.nav.services}</p>
+      <ul class="space-y-2 text-slate-400">
+        {services.map((s) => <li><a href={localePath(locale, full ? `services/${s.slug}/` : 'services/')} class="hover:text-white">{s.title[locale] ?? s.title.en}</a></li>)}
+        {full && <li><a href={localePath(locale, 'solutions/eu-launch-kit/')} class="hover:text-white">{t.nav.solution}</a></li>}
+      </ul>
     </div>
     <div>
       <p class="text-slate-300 font-medium mb-3">{t.footerGroup}</p>

@@ -1,10 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
+import Terminal from '../components/Terminal.astro';
+const lines = [
+  { k: 'cmd', a: 'curl -I https://www.synaping.com/…' },
+  { k: 'note', a: 'HTTP/2 404 · route not found' },
+  { k: 'run', a: 'suggest', b: '/ · /en/ · /de/ · /services/ · /contact/' },
+] as const;
 ---
 <Base locale="zh" slug="404/" title="页面未找到 | Page not found" description="404" alternates={[]} noindex>
-  <section class="mx-auto max-w-3xl px-5 py-32 text-center">
-    <p class="font-[family-name:var(--font-display)] text-7xl font-semibold text-gradient">404</p>
-    <h1 class="mt-6 text-2xl text-white">页面未找到 · Page not found · Seite nicht gefunden</h1>
-    <div class="mt-8 flex justify-center gap-3 flex-wrap"><a href="/" class="btn-primary">首页</a><a href="/en/" class="btn-ghost">Home</a><a href="/de/" class="btn-ghost">Startseite</a></div>
+  <section class="relative overflow-hidden glow">
+    <div class="absolute inset-0 grid-bg [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-5 py-24 text-center">
+      <p class="font-[family-name:var(--font-display)] text-7xl font-semibold text-gradient">404</p>
+      <h1 class="mt-6 text-2xl text-white">页面未找到 · Page not found · Seite nicht gefunden</h1>
+      <div class="mt-10 text-left"><Terminal title="synaping.com" lines={lines as any} /></div>
+      <div class="mt-10 flex justify-center gap-3 flex-wrap">
+        <a href="/" class="btn-primary">首页</a><a href="/services/" class="btn-ghost">服务</a><a href="/contact/" class="btn-ghost">联系我们</a>
+        <a href="/en/" class="btn-ghost">Home</a><a href="/de/" class="btn-ghost">Startseite</a>
+      </div>
+    </div>
   </section>
 </Base>
