@@ -3,7 +3,8 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const insights = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/insights' }),
+  // Ids come from filenames: zh/en translations share the same public `slug`.
+  loader: glob({ pattern: '**/*.md', base: './src/content/insights', generateId: ({ entry }) => entry.replace(/\.md$/, '') }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
