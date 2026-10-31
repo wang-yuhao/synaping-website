@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { company, htmlLang, localePath, ui, type Locale } from '../i18n/ui';
 
-interface Props { locale: Locale; slug: string; title: string; description: string; alternates: Locale[]; jsonLd?: object; noindex?: boolean }
+interface Props { locale: Locale; slug: string; title: string; description: string; alternates: Locale[]; jsonLd?: object | object[]; noindex?: boolean }
 const { locale, slug, title, description, alternates, jsonLd, noindex = false } = Astro.props;
 const site = Astro.site!;
 const canonical = new URL(localePath(locale, slug), site).href;
@@ -39,7 +39,7 @@ const org = {
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="alternate" type="application/rss+xml" title="Synaping Insights" href="/rss.xml" />
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd ? [org, jsonLd] : org)} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd ? [org, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : org)} />
 </head>
 <body class="min-h-screen flex flex-col">
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-black px-3 py-2 rounded z-50">{ui[locale].skip}</a>

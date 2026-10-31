@@ -18,6 +18,7 @@ import { getCollection } from 'astro:content';
 import { services, cases, labs, home, kit, about, contact } from '../content/site';
 import { privacy, notice } from '../content/legal';
 import { dePages, type Locale } from '../i18n/ui';
+import { pageJsonLd } from '../lib/jsonld';
 
 export async function getStaticPaths() {
   type Page = { slug: string; view: string; title: Partial<Record<Locale, string>>; desc: Partial<Record<Locale, string>>; data?: any; langs: Locale[] };
@@ -55,8 +56,15 @@ export async function getStaticPaths() {
 }
 const { locale, pg } = Astro.props as { locale: Locale; pg: any };
 const zhEn = locale as 'zh' | 'en';
+const sections: Record<Locale, Record<string, string>> = {
+  zh: { services: '服务', solutions: '解决方案', cases: '案例', labs: '研发实验室', insights: '洞察', legal: '法律信息' },
+  en: { services: 'Services', solutions: 'Solutions', cases: 'Cases', labs: 'Labs', insights: 'Insights', legal: 'Legal' },
+  de: { services: 'Leistungen', legal: 'Rechtliches' },
+};
+const homeName = { zh: '首页', en: 'Home', de: 'Startseite' }[locale];
+const ld = pageJsonLd(locale, Astro.site!, pg, sections[locale], homeName);
 ---
-<Base locale={locale} slug={pg.slug} title={pg.title[locale]} description={pg.desc[locale]} alternates={pg.langs.filter((l: Locale) => l !== 'de' || dePages.has(pg.slug))}>
+<Base locale={locale} slug={pg.slug} title={pg.title[locale]} description={pg.desc[locale]} alternates={pg.langs.filter((l: Locale) => l !== 'de' || dePages.has(pg.slug))} jsonLd={ld.length ? ld : undefined}>
   {pg.view === 'home' && <Home locale={locale} />}
   {pg.view === 'services' && <Services locale={locale} />}
   {pg.view === 'service' && <ServiceDetail locale={locale} service={pg.data} />}
