@@ -1,0 +1,41 @@
+name: ci
+on:
+  pull_request:
+  push: { branches: [main] }
+  workflow_call:
+permissions: { contents: read }
+concurrency: { group: 'ci-${{ github.ref }}', cancel-in-progress: true }
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:ad-law
+      - run: pnpm check
+      - run: pnpm build
+      - name: Size budget (≤300 KB per page HTML+CSS+JS excluding fonts/images)
+        run: |
+          total=$(du -sk dist/_astro --exclude='*.woff2' | cut -f1); echo "assets: ${total} KB"
+          test "$total" -lt 400
+      - uses: actions/cache@v4
+        with: { path: ~/.cache/ms-playwright, key: "pw-${{ hashFiles('pnpm-lock.yaml') }}" }
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: test-results, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        with: { name: dist, path: dist, retention-days: 14 }
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r api/requirements-dev.txt && cd api && python -m pytest -q

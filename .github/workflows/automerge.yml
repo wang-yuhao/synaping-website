@@ -1,0 +1,30 @@
+# Merges Claude PRs after green CI if no protected path changed, then publishes to staging.
+# Runs via workflow_run, never checks out PR code.
+name: automerge
+on:
+  workflow_run: { workflows: [ci], types: [completed] }
+permissions: { contents: write, pull-requests: write, actions: write, issues: write }
+jobs:
+  merge:
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, sparse-checkout: .github/protected-paths.txt }
+      - env: { GH_TOKEN: '${{ github.token }}', SHA: '${{ github.event.workflow_run.head_sha }}' }
+        run: |
+          pr=$(gh api "repos/${{ github.repository }}/commits/$SHA/pulls" -q '.[0].number')
+          [ -z "$pr" ] && { echo "no PR"; exit 0; }
+          info=$(gh pr view "$pr" --json author,labels,isDraft,state,headRefOid)
+          author=$(echo "$info" | jq -r .author.login); state=$(echo "$info" | jq -r .state)
+          head=$(echo "$info" | jq -r .headRefOid)
+          [ "$state" != "OPEN" ] && exit 0
+          [ "$head" != "$SHA" ] && { echo "stale run"; exit 0; }
+          case "$author" in claude|claude\[bot\]|app/claude) ;; *) echo "not a Claude PR ($author)"; exit 0;; esac
+          echo "$info" | jq -e '.labels|map(.name)|index("hold")' >/dev/null && { echo "on hold"; exit 0; }
+          files=$(gh api "repos/${{ github.repository }}/pulls/$pr/files" --paginate -q '.[].filename')
+          if echo "$files" | grep -qE -f .github/protected-paths.txt; then
+            gh pr edit "$pr" --add-label owner-review; echo "protected paths → owner review"; exit 0
+          fi
+          gh pr merge "$pr" --squash --delete-branch
+          gh workflow run publish-staging.yml --ref main

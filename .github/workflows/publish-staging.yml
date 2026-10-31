@@ -1,0 +1,45 @@
+# Build (no secrets) → sign + upload to JD Cloud OSS (environment: staging). The server pulls and verifies.
+name: publish-staging
+on:
+  workflow_dispatch:
+  push: { branches: [main] }
+permissions: { contents: read }
+concurrency: { group: publish-staging, cancel-in-progress: false }
+jobs:
+  build:
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT || 'https://s3.cn-north-1.jdcloud-oss.com' }}
+      BUCKET: ${{ vars.OSS_BUCKET || 'synaping-artifacts' }}
+    steps:
+      # No checkout: only the built artifact is handled here.
+      - uses: actions/download-artifact@v4
+        with: { name: dist, path: dist }
+      - name: Check secrets
+        id: s
+        run: |
+          if [ -z "${{ secrets.OSS_AK }}" ] || [ -z "${{ secrets.SIGNING_KEY }}" ]; then echo "ready=false" >> $GITHUB_OUTPUT; echo "::warning::OSS_AK or SIGNING_KEY not configured — skipping upload"; else echo "ready=true" >> $GITHUB_OUTPUT; fi
+      - name: Package, sign, upload
+        if: steps.s.outputs.ready == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.OSS_AK }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SK }}
+          AWS_DEFAULT_REGION: cn-north-1
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          sha=${{ github.sha }}
+          tar --sort=name --owner=0 --group=0 --numeric-owner -C dist -czf site.tar.gz .
+          sum=$(sha256sum site.tar.gz | cut -d' ' -f1)
+          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"staging"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" > manifest.json
+          printf '%s' "$SIGNING_KEY" > key.pem
+          openssl pkeyutl -sign -inkey key.pem -rawin -in manifest.json | base64 -w0 > manifest.sig
+          rm key.pem
+          aws s3 cp site.tar.gz  "s3://$BUCKET/releases/$sha/site.tar.gz" --endpoint-url "$OSS_ENDPOINT"
+          aws s3 cp manifest.json "s3://$BUCKET/staging/manifest.json" --endpoint-url "$OSS_ENDPOINT"
+          aws s3 cp manifest.sig  "s3://$BUCKET/staging/manifest.sig"  --endpoint-url "$OSS_ENDPOINT"
+          echo "Published $sha to staging"

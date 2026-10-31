@@ -1,0 +1,17 @@
+name: path-check
+on: pull_request
+permissions: { contents: read, pull-requests: read }
+jobs:
+  protected-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, sparse-checkout: .github/protected-paths.txt }
+      - env: { GH_TOKEN: '${{ github.token }}', PR: '${{ github.event.pull_request.number }}', AUTHOR: '${{ github.event.pull_request.user.login }}' }
+        run: |
+          files=$(gh api "repos/${{ github.repository }}/pulls/$PR/files" --paginate -q '.[].filename')
+          hits=$(echo "$files" | grep -E -f .github/protected-paths.txt || true)
+          if [ -n "$hits" ] && [ "$AUTHOR" != "wang-yuhao" ]; then
+            echo "::error::Protected paths changed — owner review required:"; echo "$hits"; exit 1
+          fi
+          echo "ok"

@@ -1,0 +1,19 @@
+# Interactive: @claude in an issue/PR comment — owner only.
+name: claude
+on:
+  issue_comment: { types: [created] }
+  pull_request_review_comment: { types: [created] }
+permissions: { contents: write, pull-requests: write, issues: write, id-token: write }
+jobs:
+  claude:
+    if: contains(github.event.comment.body, '@claude') && github.event.comment.user.login == 'wang-yuhao'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency: { group: 'claude-${{ github.event.issue.number || github.event.pull_request.number }}' }
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--max-turns 40'

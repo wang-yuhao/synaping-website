@@ -1,0 +1,13 @@
+# Creates labels, milestones and issues from docs/backlog.yml (idempotent: matches by title).
+name: sync-backlog
+on:
+  push: { branches: [main], paths: [docs/backlog.yml, .github/workflows/sync-backlog.yml] }
+  workflow_dispatch:
+permissions: { contents: read, issues: write }
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env: { GH_TOKEN: '${{ github.token }}' }
+        run: python3 .github/scripts/sync_backlog.py docs/backlog.yml

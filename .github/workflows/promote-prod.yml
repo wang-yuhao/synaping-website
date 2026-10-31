@@ -1,0 +1,43 @@
+# Promote the release currently on staging to production. Requires approval (environment: production).
+name: promote-prod
+on: { workflow_dispatch: { inputs: { sha: { description: 'commit SHA (default: current staging)', required: false } } } }
+permissions: { contents: read }
+concurrency: { group: promote-prod, cancel-in-progress: false }
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+    env:
+      OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT || 'https://s3.cn-north-1.jdcloud-oss.com' }}
+      BUCKET: ${{ vars.OSS_BUCKET || 'synaping-artifacts' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.OSS_AK }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SK }}
+      AWS_DEFAULT_REGION: cn-north-1
+    steps:
+      - name: Read staging manifest
+        run: |
+          set -euo pipefail
+          aws s3 cp "s3://$BUCKET/staging/manifest.json" staging.json --endpoint-url "$OSS_ENDPOINT"
+          sha="${{ inputs.sha }}"; [ -z "$sha" ] && sha=$(jq -r .sha staging.json)
+          sum=$(aws s3 cp "s3://$BUCKET/releases/$sha/site.tar.gz" - --endpoint-url "$OSS_ENDPOINT" | sha256sum | cut -d' ' -f1)
+          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"prod"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" > manifest.json
+          echo "SHA=$sha" >> $GITHUB_ENV
+      - name: Sign and publish prod manifest
+        env: { SIGNING_KEY: '${{ secrets.SIGNING_KEY }}' }
+        run: |
+          printf '%s' "$SIGNING_KEY" > key.pem
+          openssl pkeyutl -sign -inkey key.pem -rawin -in manifest.json | base64 -w0 > manifest.sig; rm key.pem
+          aws s3 cp manifest.json "s3://$BUCKET/prod/manifest.json" --endpoint-url "$OSS_ENDPOINT"
+          aws s3 cp manifest.sig  "s3://$BUCKET/prod/manifest.sig"  --endpoint-url "$OSS_ENDPOINT"
+      - name: Wait for the server health report (fail closed after 10 min)
+        run: |
+          for i in $(seq 1 40); do
+            if aws s3 cp "s3://$BUCKET/status/prod.json" status.json --endpoint-url "$OSS_ENDPOINT" 2>/dev/null \
+               && [ "$(jq -r .sha status.json)" = "$SHA" ]; then
+              cat status.json; [ "$(jq -r .result status.json)" = "ok" ] && exit 0
+              echo "::error::Server reported failure and rolled back"; exit 1
+            fi
+            sleep 15
+          done
+          echo "::error::No health report from server within 10 minutes"; exit 1

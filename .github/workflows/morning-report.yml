@@ -1,0 +1,30 @@
+name: morning-report
+on:
+  schedule: [{ cron: '0 6 * * *' }]   # 07:00 CET
+  workflow_dispatch:
+permissions: { contents: read, issues: write, pull-requests: read, actions: read }
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - env: { GH_TOKEN: '${{ github.token }}', R: '${{ github.repository }}' }
+        run: |
+          since=$(date -u -d '24 hours ago' +%FT%TZ); today=$(date -u +%F)
+          {
+            echo "## Morning report $today"
+            echo "Staging: https://staging.synaping.com · Production: https://www.synaping.com"
+            echo; echo "### Merged in the last 24 h"
+            gh pr list -R $R --state merged --search "merged:>=$since" --json number,title,author -q '.[]|"- #\(.number) \(.title) (@\(.author.login))"'
+            echo; echo "### Waiting for you (owner-review)"
+            gh pr list -R $R --label owner-review --state open --json number,title -q '.[]|"- [ ] #\(.number) \(.title)"'
+            echo; echo "### Decisions needed"
+            gh issue list -R $R --label decision-needed --state open --json number,title -q '.[]|"- [ ] #\(.number) \(.title)"'
+            echo; echo "### Failed workflow runs"
+            gh run list -R $R --status failure --created ">=$since" --json name,url -q '.[]|"- \(.name): \(.url)"'
+            echo; echo "### Owner-only checklist"
+            gh issue list -R $R --label owner-task --state open --json number,title -q '.[]|"- [ ] #\(.number) \(.title)"'
+            echo; echo "### Ready queue for tonight"
+            gh issue list -R $R --label ready --state open --json number,title -q '.[:6][]|"- #\(.number) \(.title)"'
+          } > body.md
+          gh issue list -R $R --label report --state open --json number -q '.[].number' | xargs -r -n1 gh issue close -R $R
+          gh issue create -R $R --title "Morning report $today" --label report --body-file body.md
