@@ -6,7 +6,7 @@ interface Props { locale: Locale }
 const { locale } = Astro.props;
 const c = contact[locale];
 const f = c.fields;
-const input = 'mt-1.5 w-full rounded-lg border border-slate-700 bg-[#0b1220] px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none';
+const input = 'mt-1.5 w-full rounded-lg border border-slate-700 bg-[#0b1220] px-3.5 py-2.5 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none';
 ---
 <PageHead kicker={ui[locale].nav.contact} title={c.title} lead={c.lead} />
 <section class="mx-auto max-w-7xl px-5 py-16 grid gap-10 lg:grid-cols-[1.4fr_1fr]">

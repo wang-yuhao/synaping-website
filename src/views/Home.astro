@@ -55,7 +55,7 @@ const stack = ['Databricks', 'Apache Spark', 'Delta Lake', 'Python', 'TypeScript
         <h2 class="mt-3 text-3xl font-semibold text-white">{h.kitTitle}</h2>
         <p class="mt-3 text-slate-300 max-w-2xl leading-relaxed">{h.kitLead}</p>
       </div>
-      <a href={localePath(locale, full ? 'solutions/eu-launch-kit/' : 'contact/')} class="btn-primary justify-self-start">{t.learnMore}<Icon name="arrow" class="w-4 h-4" /></a>
+      <a href={localePath(locale, full ? 'solutions/eu-launch-kit/' : 'contact/')} class="btn-primary justify-self-start">{h.kitTitle}<Icon name="arrow" class="w-4 h-4" /></a>
     </div>
   </div>
 </section>
@@ -92,7 +92,7 @@ const stack = ['Databricks', 'Apache Spark', 'Delta Lake', 'Python', 'TypeScript
 <section class="mx-auto max-w-7xl px-5 pb-20">
   <div class="flex items-end justify-between gap-6">
     <div><h2 class="text-3xl font-semibold text-white">{h.labsTitle}</h2><p class="mt-3 text-slate-400">{h.labsLead}</p></div>
-    <a href={localePath(locale, 'labs/')} class="hidden sm:inline-flex text-sm text-cyan-300 items-center gap-1">{t.learnMore}<Icon name="arrow" class="w-4 h-4" /></a>
+    <a href={localePath(locale, 'labs/')} class="hidden sm:inline-flex text-sm text-cyan-300 items-center gap-1">{h.labsTitle}<span class="sr-only"> overview</span><Icon name="arrow" class="w-4 h-4" /></a>
   </div>
   <div class="mt-8 grid gap-6 md:grid-cols-2">
     {labs.map((l) => (
@@ -106,7 +106,7 @@ const stack = ['Databricks', 'Apache Spark', 'Delta Lake', 'Python', 'TypeScript
 )}
 
 <section class="border-y border-white/5 py-10 overflow-hidden">
-  <p class="text-center text-xs tracking-[0.3em] text-slate-500 uppercase">{h.stackTitle}</p>
+  <p class="text-center text-xs tracking-[0.3em] text-slate-400 uppercase">{h.stackTitle}</p>
   <ul class="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-3 px-5 text-slate-400 font-[family-name:var(--font-display)]">
     {stack.map((s) => <li>{s}</li>)}
   </ul>

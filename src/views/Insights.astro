@@ -12,7 +12,7 @@ const T = { zh: { t: '洞察', l: '关于出海技术、数据平台与合规工
   {posts.length === 0 && <p class="card p-8 text-slate-300">{T.e}</p>}
   {posts.map((p) => (
     <a href={localePath(locale, `insights/${p.data.slug}/`)} class="card p-7 block">
-      <time class="text-xs text-slate-500" datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
+      <time class="text-xs text-slate-400" datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
       <h2 class="mt-2 text-xl font-semibold text-white">{p.data.title}</h2>
       <p class="mt-2 text-slate-400">{p.data.description}</p>
     </a>
