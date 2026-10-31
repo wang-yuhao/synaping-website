@@ -1,14 +1,24 @@
 ---
 import Icon from '../components/Icon.astro';
+import ArchDiagram from '../components/ArchDiagram.astro';
+import SectionHead from '../components/SectionHead.astro';
 import PageHead from './PageHead.astro';
 import CtaBand from './CtaBand.astro';
-import type { Service } from '../content/site';
-import type { Locale } from '../i18n/ui';
+import { cases, labs, engagement, type Service } from '../content/site';
+import { localePath, type Locale } from '../i18n/ui';
 interface Props { locale: Locale; service: Service }
 const { locale, service: s } = Astro.props;
 const L = (o: any) => o[locale] ?? o.en;
-const T = { zh: { k: '服务', p: '常见挑战', d: '交付内容', st: '常用技术', f: '常见问题' }, en: { k: 'Service', p: 'Typical challenges', d: 'What we deliver', st: 'Typical stack', f: 'FAQ' } }[locale as 'zh' | 'en'];
+const T = {
+  zh: { k: '服务', p: '常见挑战', d: '交付内容', m: '实施方法', a: '参考架构', ac: '示意架构，具体组件按项目需求与预算选择。', st: '常用技术', r: '相关案例与研究', f: '常见问题' },
+  en: { k: 'Service', p: 'Typical challenges', d: 'What we deliver', m: 'How we approach it', a: 'Reference architecture', ac: 'Illustrative; components are chosen per project, requirements and budget.', st: 'Typical stack', r: 'Related work', f: 'FAQ' },
+}[locale as 'zh' | 'en'];
 const faq = L(s.faq) as { q: string; a: string }[];
+const related = s.related.map((r) => {
+  const item = (r.kind === 'case' ? cases : labs).find((x) => x.slug === r.slug)!;
+  return { href: localePath(locale, `${r.kind === 'case' ? 'cases' : 'labs'}/${r.slug}/`), title: L(item.title), summary: L(item.summary), tag: r.kind === 'case' ? 'Case' : 'Lab' };
+});
+const e = engagement[locale];
 ---
 <PageHead kicker={T.k} title={L(s.title)} lead={L(s.short)} />
 <section class="mx-auto max-w-7xl px-5 py-16 grid gap-8 md:grid-cols-2">
@@ -21,10 +31,57 @@ const faq = L(s.faq) as { q: string; a: string }[];
     <ul class="mt-5 space-y-3 text-slate-300">{L(s.deliverables).map((p: string) => <li class="flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{p}</li>)}</ul>
   </div>
 </section>
+
 <section class="mx-auto max-w-7xl px-5">
-  <h2 class="text-xl font-semibold text-white">{T.st}</h2>
-  <ul class="mt-4 flex flex-wrap gap-2">{s.stack.map((x) => <li class="text-sm rounded-full border border-slate-600 px-3 py-1 text-slate-300">{x}</li>)}</ul>
+  <SectionHead kicker="Method" title={T.m} />
+  <ol class="mt-8 grid gap-4 md:grid-cols-5">
+    {L(s.phases).map((p: string, i: number) => {
+      const [head, ...rest] = p.split(/[：:]/);
+      return (
+        <li class="card p-5">
+          <span class="font-mono-ui text-xs text-cyan-300">STEP {String(i + 1).padStart(2, '0')}</span>
+          <p class="mt-2 text-white font-medium">{head}</p>
+          {rest.length > 0 && <p class="mt-1.5 text-sm text-slate-400 leading-relaxed">{rest.join('：')}</p>}
+        </li>
+      );
+    })}
+  </ol>
 </section>
+
+<section class="mx-auto max-w-7xl px-5 pt-16">
+  <SectionHead kicker="Architecture" title={T.a} />
+  <div class="mt-8"><ArchDiagram cols={L(s.arch)} caption={T.ac} /></div>
+  <h3 class="mt-10 text-sm font-medium text-slate-300">{T.st}</h3>
+  <ul class="mt-3 flex flex-wrap gap-2">{s.stack.map((x) => <li class="chip !text-sm">{x}</li>)}</ul>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 pt-16">
+  <SectionHead kicker={e.kicker} title={e.title} lead={e.lead} />
+  <div class="mt-8 grid gap-4 md:grid-cols-3">
+    {e.items.map((x) => (
+      <div class="card p-6">
+        <Icon name={x.icon} class="w-6 h-6 text-violet-300" />
+        <p class="mt-4 text-lg font-semibold text-white">{x.t}</p>
+        <p class="mt-2 text-sm text-slate-300 leading-relaxed">{x.d}</p>
+        <p class="mt-4 text-xs text-slate-400">{x.fit}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 pt-16">
+  <SectionHead kicker="Proof" title={T.r} />
+  <div class="mt-8 grid gap-4 md:grid-cols-2">
+    {related.map((r) => (
+      <a href={r.href} class="card p-6 block transition-colors group">
+        <span class="chip !text-[11px]">{r.tag}</span>
+        <p class="mt-3 text-white font-semibold">{r.title}</p>
+        <p class="mt-2 text-sm text-slate-400 leading-relaxed">{r.summary}</p>
+      </a>
+    ))}
+  </div>
+</section>
+
 <section class="mx-auto max-w-4xl px-5 py-16">
   <h2 class="text-2xl font-semibold text-white">{T.f}</h2>
   <div class="mt-6 divide-y divide-white/10 card">

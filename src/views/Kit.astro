@@ -1,8 +1,10 @@
 ---
 import Icon from '../components/Icon.astro';
+import SectionHead from '../components/SectionHead.astro';
+import BridgeLine from '../components/BridgeLine.astro';
 import PageHead from './PageHead.astro';
 import CtaBand from './CtaBand.astro';
-import { kit } from '../content/site';
+import { kit, kitTierRows } from '../content/site';
 import { company, type Locale } from '../i18n/ui';
 interface Props { locale: 'zh' | 'en' }
 const { locale } = Astro.props;
@@ -13,17 +15,62 @@ const k = kit[locale];
   <div class="card p-8">
     <h2 class="text-xl font-semibold text-white">{k.checklistTitle}</h2>
     <ul class="mt-6 space-y-3 text-slate-300">{k.checklist.map((x) => <li class="flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{x}</li>)}</ul>
+    <div class="mt-10 max-w-md"><BridgeLine left={locale === 'zh' ? '上海 Shanghai' : 'Shanghai'} right={locale === 'zh' ? '慕尼黑 München' : 'München'} rightSub="UTC+1 / +2" /></div>
   </div>
-  <div class="grid gap-4">
+  <div class="grid gap-4 content-start">
     {k.tiers.map((tier, i) => (
-      <div class:list={['card p-6', i === 1 && 'border-cyan-400/50']}>
+      <div class:list={['card p-6', i === 1 && 'card-glow border-cyan-400/50']}>
         <div class="flex items-baseline justify-between"><h3 class="text-lg font-semibold text-white">{tier.name}</h3><span class="text-sm text-cyan-300">{tier.price}</span></div>
         <p class="mt-2 text-sm text-slate-400">{tier.d}</p>
       </div>
     ))}
   </div>
 </section>
+
 <section class="mx-auto max-w-7xl px-5">
+  <SectionHead kicker="Timeline" title={k.timelineTitle} lead={k.timelineNote} />
+  <ol class="mt-10 relative grid gap-6 md:grid-cols-4">
+    <span class="hidden md:block absolute left-0 right-0 top-[7px] h-px flow-x" aria-hidden="true"></span>
+    {k.timeline.map((s) => (
+      <li class="relative md:pt-8">
+        <span class="hidden md:block absolute top-0 left-0 h-[15px] w-[15px] rounded-full border-2 border-cyan-300 bg-[#070b16]" aria-hidden="true"></span>
+        <p class="font-mono-ui text-xs text-cyan-300">{s.w}</p>
+        <p class="mt-2 text-lg font-semibold text-white">{s.t}</p>
+        <p class="mt-2 text-sm text-slate-400 leading-relaxed">{s.d}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 pt-20">
+  <SectionHead kicker="Packages" title={k.matrixTitle} />
+  <div class="mt-8 card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-white/10">
+          <th scope="col" class="p-4 text-left font-medium text-slate-400"><span class="sr-only">{k.matrixTitle}</span></th>
+          {k.tiers.map((t, i) => <th scope="col" class:list={['p-4 text-center font-semibold', i === 1 ? 'text-cyan-300' : 'text-white']}>{t.name}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {k.matrix.map((row, r) => (
+          <tr class="border-b border-white/5 last:border-0">
+            <th scope="row" class="p-4 text-left font-normal text-slate-300">{row}</th>
+            {kitTierRows.map((n) => (
+              <td class="p-4 text-center">{r < n ? <><Icon name="check" class="w-5 h-5 inline text-cyan-300" /><span class="sr-only">✓</span></> : <span class="text-slate-500" aria-label="—">—</span>}</td>
+            ))}
+          </tr>
+        ))}
+        <tr>
+          <th scope="row" class="p-4 text-left font-normal text-slate-400">{locale === 'zh' ? '价格' : 'Price'}</th>
+          {k.tiers.map((t) => <td class="p-4 text-center text-cyan-300">{t.price}</td>)}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 pt-16">
   <div class="card p-6 text-slate-300 flex flex-col md:flex-row gap-4 md:items-center justify-between">
     <p>{k.partner}</p>
     <a href={company.sisterSites[0].url} class="btn-ghost text-sm shrink-0" rel="noopener">{k.partnerLink}</a>

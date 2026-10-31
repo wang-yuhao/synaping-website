@@ -15,6 +15,9 @@ export interface Service {
   short: L<string>;
   pains: L<string[]>;
   deliverables: L<string[]>;
+  phases: L<string[]>;
+  arch: L<Arch>;
+  related: Ref[];
   stack: string[];
   faq: L<{ q: string; a: string }[]>;
 }
@@ -37,15 +40,38 @@ export const services: Service[] = [
       zh: ['中 / 英 / 德 多语种官网（静态生成，加载快）', '欧洲版隐私政策、法律声明（Impressum）页面结构', 'Google 与百度 SEO 基础、结构化数据、站点地图', '无 Cookie 访问统计与询盘表单', '持续集成 / 持续部署与运维交接文档'],
       en: ['Chinese / English / German site, statically generated', 'EU-style privacy policy and legal-notice (Impressum) page structure', 'SEO foundations for Google and Baidu, structured data, sitemaps', 'Cookie-less analytics and lead form', 'CI/CD pipeline and handover documentation'],
     },
-    stack: ['Astro', 'TypeScript', 'Tailwind CSS', 'Nginx', 'GitHub Actions', 'CDN'],
+    phases: {
+      zh: ['受众与目标：明确欧洲目标客户、语言与询盘路径', '信息架构与内容：页面结构、三语文案与关键词规划', '设计与开发：组件化静态站点，设定性能与无障碍预算', '合规与上线：第三方请求审计、法律页面结构、监控', '持续增长：SEO 迭代、询盘分析与内容更新'],
+      en: ['Audience and goals: target buyers, languages and the path to an inquiry', 'Information architecture and content: page structure, trilingual copy, keyword plan', 'Design and build: component-based static site with performance and accessibility budgets', 'Compliance and launch: third-party request audit, legal page structure, monitoring', 'Growth: SEO iterations, inquiry analysis and content updates'],
+    },
+    arch: {
+      zh: [
+        { t: '内容', items: ['中 / 英 / 德 文案', '版本化内容源', '结构化数据与 hreflang'] },
+        { t: '构建', items: ['静态生成', '自托管字体与资源', '性能与广告法检查'], tone: 'violet' },
+        { t: '分发', items: ['CDN（大陆 + 海外）', 'HTTPS 与安全响应头', '无 Cookie 统计'], tone: 'amber' },
+        { t: '转化', items: ['询盘表单 API', '邮件 / CRM 通知', '询盘数据看板'] },
+      ],
+      en: [
+        { t: 'Content', items: ['Chinese / English / German copy', 'Versioned content source', 'Structured data and hreflang'] },
+        { t: 'Build', items: ['Static generation', 'Self-hosted fonts and assets', 'Performance and wording checks'], tone: 'violet' },
+        { t: 'Delivery', items: ['CDN (mainland + overseas)', 'HTTPS and security headers', 'Cookie-less analytics'], tone: 'amber' },
+        { t: 'Conversion', items: ['Lead-form API', 'Email / CRM notification', 'Inquiry dashboard'] },
+      ],
+    },
+    related: [{ kind: 'case', slug: 'weiyi-international' }, { kind: 'case', slug: 'weiyiliuxue' }],
+    stack: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'Nginx', 'GitHub Actions', 'CDN'],
     faq: {
       zh: [
         { q: '网站可以同时服务中国和欧洲访客吗？', a: '可以。我们常用"一套代码、两地部署"：中国大陆节点满足备案与访问速度，欧洲节点满足 GDPR 与低延迟。' },
         { q: '你们提供德语内容吗？', a: '提供。德语页面由懂业务的母语级人员校对，避免机翻带来的信任问题。' },
+        { q: '为什么强调"零第三方请求"？', a: '在欧洲，网站直接加载境外字体、统计或地图服务，可能把访客 IP 等数据传给第三方。我们默认自托管全部资源，从技术上降低这类风险，同时也让国内访问更稳定。' },
+        { q: '上线后谁来维护？', a: '我们提供运维交接文档；也可以通过长期服务，由我们负责内容更新、监控与安全升级。' },
       ],
       en: [
         { q: 'Can one site serve visitors in China and Europe?', a: 'Yes. We typically use one codebase with two deployments: a mainland node for ICP compliance and speed, an EU node for GDPR and low latency.' },
         { q: 'Do you provide German content?', a: 'Yes. German pages are proofread by fluent speakers who understand the business context.' },
+        { q: 'Why "zero third-party requests"?', a: 'In Europe, loading fonts, analytics or maps from external services can pass visitor data such as IP addresses to third parties. We self-host every asset by default, which reduces that exposure and also makes the site more reliable from mainland China.' },
+        { q: 'Who maintains the site after launch?', a: 'You get handover documentation. Alternatively, a retainer covers content updates, monitoring and security upgrades.' },
       ],
     },
   },
@@ -66,15 +92,38 @@ export const services: Service[] = [
       zh: ['湖仓一体数据平台设计（Databricks / Delta Lake 等）', '数据采集、清洗、统一口径的自动化管道', '管理层 BI 看板与指标体系', '基于大模型的文档处理、客服与内部助手智能体', '数据质量监控与告警'],
       en: ['Lakehouse platform design (Databricks / Delta Lake and similar)', 'Automated ingestion, cleaning and harmonisation pipelines', 'Management BI dashboards and KPI definitions', 'LLM agents for documents, support and internal assistants', 'Data-quality monitoring and alerting'],
     },
-    stack: ['Databricks', 'Apache Spark', 'Delta Lake', 'Python', 'SQL', 'Power BI', 'LangGraph'],
+    phases: {
+      zh: ['诊断：盘点数据源、指标口径与关键业务问题', '建模：分层数据模型（Bronze / Silver / Gold）与统一口径', '管道：自动化采集、清洗与数据质量规则', '应用：BI 看板、AI 智能体与告警', '运营：监控、成本优化与知识转移'],
+      en: ['Assess: inventory sources, metric definitions and key business questions', 'Model: layered data model (Bronze / Silver / Gold) with shared definitions', 'Pipelines: automated ingestion, cleaning and data-quality rules', 'Apply: BI dashboards, AI agents and alerts', 'Operate: monitoring, cost optimisation and knowledge transfer'],
+    },
+    arch: {
+      zh: [
+        { t: '数据源', items: ['ERP / CRM / 电商平台', '广告与营销数据', '文件、API 与数据库'], tone: 'amber' },
+        { t: 'Bronze', items: ['增量采集', '原始数据留存', 'Schema 演进'] },
+        { t: 'Silver', items: ['清洗、去重与关联', '统一指标口径', '数据质量规则与隔离表'] },
+        { t: 'Gold', items: ['指标与特征', 'BI 看板', 'AI 智能体与检索增强'], tone: 'violet' },
+      ],
+      en: [
+        { t: 'Sources', items: ['ERP / CRM / e-commerce', 'Advertising and marketing data', 'Files, APIs and databases'], tone: 'amber' },
+        { t: 'Bronze', items: ['Incremental ingestion', 'Raw data retained', 'Schema evolution'] },
+        { t: 'Silver', items: ['Cleaned, deduplicated, joined', 'Shared metric definitions', 'Quality rules and quarantine tables'] },
+        { t: 'Gold', items: ['Metrics and features', 'BI dashboards', 'AI agents and retrieval'], tone: 'violet' },
+      ],
+    },
+    related: [{ kind: 'lab', slug: 'neuroscience-eeg-lakehouse' }, { kind: 'lab', slug: 'quant-research-infrastructure' }],
+    stack: ['Databricks', 'Apache Spark', 'Delta Lake', 'Unity Catalog', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'],
     faq: {
       zh: [
         { q: '我们的数据量不大，也需要数据平台吗？', a: '不一定。我们会先做 1–2 周的诊断，从轻量方案开始，按业务价值逐步扩展。' },
         { q: 'AI 智能体会不会泄露公司数据？', a: '我们按数据分级设计权限，敏感数据可留在私有环境中处理，并记录完整的调用日志。' },
+        { q: '必须使用 Databricks 吗？', a: '不必须。分层建模、数据质量与可复现计算的方法不依赖特定厂商，可以按预算与合规要求选择 Databricks、公有云托管服务或 Spark、Delta Lake 等开源组件。' },
+        { q: '如何判断数据项目是否成功？', a: '诊断阶段与业务方一起定义少量可验证的目标，例如报表更新时效或节省的人工工作，交付后逐项复盘。' },
       ],
       en: [
         { q: 'Our data volume is small. Do we need a data platform?', a: 'Not necessarily. We start with a 1–2 week assessment and a lightweight setup, then grow with proven value.' },
         { q: 'Will AI agents leak company data?', a: 'Access follows data classification; sensitive data can stay in a private environment, and every call is logged.' },
+        { q: 'Do we have to use Databricks?', a: 'No. Layered modelling, data quality and reproducible computation do not depend on one vendor: Databricks, managed cloud services or open-source Spark and Delta Lake are chosen by budget and compliance needs.' },
+        { q: 'How do we know the project worked?', a: 'During the assessment we agree a few verifiable goals with the business, such as report freshness or manual work saved, and review each one after delivery.' },
       ],
     },
   },
@@ -95,15 +144,38 @@ export const services: Service[] = [
       zh: ['中欧双区域部署架构（京东云 / 阿里云 / 腾讯云 + Azure / AWS 欧洲区）', '数据流向梳理、数据驻留与访问控制方案', '同意管理、日志留存等合规相关技术实现', '自动化部署、回滚、监控与备份', '运维手册与应急预案'],
       en: ['Dual-region architecture (JD / Alibaba / Tencent Cloud + Azure / AWS EU regions)', 'Data-flow mapping, data residency and access control', 'Technical controls: consent management, log retention and similar', 'Automated deployment, rollback, monitoring and backups', 'Runbooks and incident playbooks'],
     },
+    phases: {
+      zh: ['数据流向梳理：识别个人信息、跨境传输与驻留需求', '架构设计：区域划分、网络、身份与访问控制', '自动化：基础设施即代码、CI/CD 与签名发布', '可观测性：监控、日志留存、告警与备份', '演练与交接：回滚演练、应急预案与运维手册'],
+      en: ['Data-flow mapping: personal data, cross-border transfers and residency needs', 'Architecture: regions, networking, identity and access control', 'Automation: infrastructure as code, CI/CD and signed releases', 'Observability: monitoring, log retention, alerting and backups', 'Drills and handover: rollback drills, incident playbooks and runbooks'],
+    },
+    arch: {
+      zh: [
+        { t: '中国大陆区', items: ['ICP 备案站点', '国内 CDN 节点', '境内数据存储'] },
+        { t: '发布管道', items: ['无密钥构建与测试', '签名构建包', '人工审批上线'], tone: 'amber' },
+        { t: '欧洲区', items: ['EU 区域主机', '欧洲数据驻留', '同意管理与日志留存'], tone: 'violet' },
+        { t: '运维', items: ['健康检查与自动回滚', '监控与告警', '加密备份'] },
+      ],
+      en: [
+        { t: 'Mainland China', items: ['ICP-filed site', 'Domestic CDN', 'In-country data storage'] },
+        { t: 'Release pipeline', items: ['Build and test without secrets', 'Signed build artifacts', 'Human-approved release'], tone: 'amber' },
+        { t: 'EU region', items: ['EU-region hosting', 'European data residency', 'Consent management and log retention'], tone: 'violet' },
+        { t: 'Operations', items: ['Health checks and auto-rollback', 'Monitoring and alerting', 'Encrypted backups'] },
+      ],
+    },
+    related: [{ kind: 'case', slug: 'synaping-ci-cd' }, { kind: 'case', slug: 'weiyiliuxue' }],
     stack: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'],
     faq: {
       zh: [
         { q: '你们提供法律意见吗？', a: '不提供。我们负责技术实现，并与您的律师或合规顾问协作；法律判断请以专业律师意见为准。' },
         { q: '可以在不停机的情况下迁移吗？', a: '多数情况下可以，我们会设计分阶段迁移与回滚方案。' },
+        { q: '一定要中欧两套部署吗？', a: '不一定。是否采用双区域取决于用户所在地、数据类型与访问要求；诊断阶段会比较单区域与双区域方案的成本与风险。' },
+        { q: '发布为什么要签名？', a: '签名让服务器只接受经过 CI 构建与测试的版本：即使下载渠道被篡改，未签名或签名不符的构建包也会被拒绝。' },
       ],
       en: [
         { q: 'Do you give legal advice?', a: 'No. We implement the technical side and work with your lawyer or compliance adviser, whose judgement prevails.' },
         { q: 'Can you migrate without downtime?', a: 'In most cases, yes: we plan staged migrations with tested rollback.' },
+        { q: 'Do we need deployments in both China and the EU?', a: 'Not always. It depends on where users are, what data is processed and access requirements; the assessment compares single- and dual-region options on cost and risk.' },
+        { q: 'Why sign releases?', a: 'Signing means the server only accepts builds that CI built and tested: if a download channel is tampered with, unsigned or mismatched artifacts are rejected.' },
       ],
     },
   },
@@ -329,6 +401,16 @@ export const kit = {
       { name: 'Growth', d: 'Starter + 内容营销页面 + SEO + 询盘自动化', price: '按需报价' },
       { name: 'Data', d: 'Growth + 数据看板 + 中欧双区域数据管道', price: '按需报价' },
     ],
+    timelineTitle: '典型交付节奏',
+    timelineNote: '实际周期按范围与内容准备情况确定，诊断阶段给出明确里程碑。',
+    timeline: [
+      { w: '第 1 周', t: '启动', d: '目标与受众、域名与企业邮箱、内容清单' },
+      { w: '第 2–3 周', t: '设计与内容', d: '信息架构、三语文案、视觉设计确认' },
+      { w: '第 4–6 周', t: '开发与合规', d: '站点开发、欧洲主机与 CDN、合规技术基线、表单与数据管道' },
+      { w: '第 7–8 周', t: '上线与交接', d: '上线清单、搜索引擎提交、监控与运维交接' },
+    ],
+    matrixTitle: '方案对比',
+    matrix: ['三语官网', '欧洲主机与 CDN', '合规技术基线', '内容营销页面', 'SEO', '询盘自动化', '数据看板', '中欧双区域数据管道'],
     partner: '需要市场调研、翻译、展会与商务谈判支持？我们的姐妹品牌惟意国际（Weiyi International）提供商务咨询服务。',
     partnerLink: '了解惟意国际',
   },
@@ -342,6 +424,16 @@ export const kit = {
       { name: 'Growth', d: 'Starter + content pages + SEO + lead automation', price: 'On request' },
       { name: 'Data', d: 'Growth + dashboards + China–EU data pipeline', price: 'On request' },
     ],
+    timelineTitle: 'Typical delivery rhythm',
+    timelineNote: 'The actual timeline depends on scope and content readiness; the assessment sets clear milestones.',
+    timeline: [
+      { w: 'Week 1', t: 'Kick-off', d: 'Goals and audience, domain and business email, content inventory' },
+      { w: 'Weeks 2–3', t: 'Design and content', d: 'Information architecture, trilingual copy, visual design sign-off' },
+      { w: 'Weeks 4–6', t: 'Build and compliance', d: 'Site build, EU hosting and CDN, compliance baseline, form and data pipeline' },
+      { w: 'Weeks 7–8', t: 'Launch and handover', d: 'Launch checklist, search-engine submission, monitoring and handover' },
+    ],
+    matrixTitle: 'Compare packages',
+    matrix: ['Trilingual website', 'EU hosting and CDN', 'Compliance baseline', 'Content marketing pages', 'SEO', 'Lead automation', 'Dashboards', 'China–EU data pipeline'],
     partner: 'Need market research, translation, trade fairs or negotiation support? Our sister brand Weiyi International provides business consulting.',
     partnerLink: 'Visit Weiyi International',
   },
@@ -558,6 +650,19 @@ export const about = {
     founderBio: '慕尼黑大学（LMU）计算机科学硕士（数据分析方向），在德国长期从事企业级数据平台与云架构工作。',
     network: '专家网络：根据项目需要，我们与前端、数据科学、金融与德语内容方面的合作伙伴协作。',
     groupTitle: '集团品牌',
+    valuesTitle: '我们的原则',
+    values: [
+      { t: '惟精', d: '精确的工程：可测试、可复现、可回滚，每个决定都有记录。' },
+      { t: '惟诚', d: '坦诚的沟通：不夸大能力，不承诺无法验证的结果，风险提前说明。' },
+      { t: '一心一意', d: '专注的交付：一个团队对结果负责，从方案到上线后的运维。' },
+    ],
+    workTitle: '如何协作',
+    work: [
+      { icon: 'globe', t: '三种工作语言', d: '中文、英文与德文，减少翻译带来的信息损耗。' },
+      { icon: 'clock', t: '两地时段衔接', d: '上海与慕尼黑的工作时间前后衔接，问题当天可以继续推进。' },
+      { icon: 'layers', t: '透明的进度', d: '按周迭代，测试环境实时可见，变更全部有版本记录。' },
+      { icon: 'lock', t: '文档化交接', d: '架构、运维与应急文档随交付提供，系统不依赖某一个人。' },
+    ],
   },
   en: {
     title: 'About Synaping',
@@ -572,6 +677,19 @@ export const about = {
     founderBio: 'MSc Computer Science (data analytics) from LMU Munich; long-standing work on enterprise data platforms and cloud architecture in Germany.',
     network: 'Expert network: depending on the project, we work with partners in front-end development, data science, finance and German content.',
     groupTitle: 'Group brands',
+    valuesTitle: 'Our principles',
+    values: [
+      { t: 'Precision · 惟精', d: 'Precise engineering: testable, reproducible, reversible, with every decision recorded.' },
+      { t: 'Sincerity · 惟诚', d: 'Honest communication: no inflated claims, no promises we cannot verify, risks named early.' },
+      { t: 'Focus · 一心一意', d: 'Focused delivery: one team accountable for the result, from plan to operations after launch.' },
+    ],
+    workTitle: 'How we work',
+    work: [
+      { icon: 'globe', t: 'Three working languages', d: 'Chinese, English and German, so less is lost in translation.' },
+      { icon: 'clock', t: 'Two time zones', d: 'Shanghai and Munich hours hand over, so issues keep moving the same day.' },
+      { icon: 'layers', t: 'Visible progress', d: 'Weekly iterations, a live staging environment, every change versioned.' },
+      { icon: 'lock', t: 'Documented handover', d: 'Architecture, operations and incident docs ship with the work; nothing depends on one person.' },
+    ],
   },
 };
 
