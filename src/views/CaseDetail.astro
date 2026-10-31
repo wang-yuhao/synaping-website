@@ -1,19 +1,35 @@
 ---
 import Icon from '../components/Icon.astro';
+import ArchDiagram from '../components/ArchDiagram.astro';
 import PageHead from './PageHead.astro';
 import CtaBand from './CtaBand.astro';
-import type { Case } from '../content/site';
-import type { Locale } from '../i18n/ui';
+import { cases, type Case } from '../content/site';
+import { localePath, type Locale } from '../i18n/ui';
 interface Props { locale: 'zh' | 'en'; item: Case }
 const { locale, item: c } = Astro.props;
-const T = { zh: { ch: '挑战', ap: '方法', re: '结果' }, en: { ch: 'Challenge', ap: 'Approach', re: 'Result' } }[locale];
+const T = { zh: { ch: '挑战', ap: '方法', ar: '架构', re: '结果', st: '技术栈', v: '访问网站', more: '更多案例' }, en: { ch: 'Challenge', ap: 'Approach', ar: 'Architecture', re: 'Result', st: 'Stack', v: 'Visit site', more: 'More cases' } }[locale];
+const others = cases.filter((x) => x.slug !== c.slug);
 ---
 <PageHead kicker={c.tags.join(' · ')} title={c.title[locale]} lead={c.summary[locale]} />
-<section class="mx-auto max-w-4xl px-5 py-16 grid gap-8">
-  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.ch}</h2><p class="mt-3 text-slate-300 leading-relaxed">{c.challenge[locale]}</p></div>
-  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.ap}</h2>
+<section class="mx-auto max-w-5xl px-5 py-16 grid gap-8">
+  <div class="grid gap-8 md:grid-cols-[1.4fr_1fr]">
+    <div class="card p-8"><p class="kicker">01</p><h2 class="mt-2 text-xl font-semibold text-white">{T.ch}</h2><p class="mt-3 text-slate-300 leading-relaxed">{c.challenge[locale]}</p></div>
+    <div class="card p-8">
+      <h2 class="text-sm font-medium text-slate-300">{T.st}</h2>
+      <ul class="mt-3 flex flex-wrap gap-2">{c.stack.map((x) => <li class="chip">{x}</li>)}</ul>
+      {c.url && <a href={c.url} rel="noopener" class="mt-6 btn-ghost text-sm">{T.v}<Icon name="arrow" class="w-4 h-4" /></a>}
+    </div>
+  </div>
+  <div class="card p-8"><p class="kicker">02</p><h2 class="mt-2 text-xl font-semibold text-white">{T.ap}</h2>
     <ol class="mt-5 grid gap-4 md:grid-cols-3">{c.approach[locale].map((a, i) => <li class="rounded-xl border border-slate-700 p-4"><span class="text-gradient font-semibold">0{i + 1}</span><p class="mt-2 text-sm text-slate-300">{a}</p></li>)}</ol>
   </div>
-  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.re}</h2><p class="mt-3 text-slate-300 leading-relaxed flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{c.result[locale]}</p></div>
+  <div><p class="kicker">03</p><h2 class="mt-2 mb-5 text-xl font-semibold text-white">{T.ar}</h2><ArchDiagram cols={c.arch[locale]} /></div>
+  <div class="card p-8"><p class="kicker">04</p><h2 class="mt-2 text-xl font-semibold text-white">{T.re}</h2><p class="mt-3 text-slate-300 leading-relaxed flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{c.result[locale]}</p></div>
+</section>
+<section class="mx-auto max-w-5xl px-5">
+  <h2 class="text-lg font-semibold text-white">{T.more}</h2>
+  <div class="mt-4 grid gap-4 md:grid-cols-2">
+    {others.map((o) => <a href={localePath(locale, `cases/${o.slug}/`)} class="card p-6 block"><p class="text-white font-medium">{o.title[locale]}</p><p class="mt-2 text-sm text-slate-400">{o.summary[locale]}</p></a>)}
+  </div>
 </section>
 <CtaBand locale={locale as Locale} />

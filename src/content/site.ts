@@ -4,6 +4,9 @@
 import type { Locale } from '../i18n/ui';
 
 type L<T> = Partial<Record<Locale, T>> & { zh: T; en: T };
+type Tone = 'cyan' | 'violet' | 'amber';
+export type Arch = { t: string; items: string[]; tone?: Tone }[];
+export type Ref = { kind: 'case' | 'lab'; slug: string };
 
 export interface Service {
   slug: string;
@@ -106,6 +109,68 @@ export const services: Service[] = [
   },
 ];
 
+type Engagement = { icon: 'search' | 'layers' | 'clock'; t: string; d: string; fit: string };
+export const engagement: Record<Locale, { kicker: string; title: string; lead: string; items: Engagement[] }> = {
+  zh: {
+    kicker: 'Engagement models',
+    title: '三种合作方式',
+    lead: '从一次诊断开始，按需要扩展为项目交付或长期服务。',
+    items: [
+      { icon: 'search', t: '诊断', d: '1–2 周梳理现状、目标与约束，输出架构方案、报价与里程碑。', fit: '适合：方向已定、方案未定' },
+      { icon: 'layers', t: '项目交付', d: '固定范围与里程碑，按周迭代，测试环境实时可见，交付含文档与交接。', fit: '适合：明确的建设目标' },
+      { icon: 'clock', t: '长期服务', d: '按月提供运维、监控、内容更新、安全升级与持续优化。', fit: '适合：上线后的稳定运营' },
+    ],
+  },
+  en: {
+    kicker: 'Engagement models',
+    title: 'Three ways to work with us',
+    lead: 'Start with an assessment, then extend into a project or an ongoing retainer.',
+    items: [
+      { icon: 'search', t: 'Assessment', d: '1–2 weeks to map the current state, goals and constraints, ending with an architecture plan, quote and milestones.', fit: 'Fits: direction set, solution open' },
+      { icon: 'layers', t: 'Project', d: 'Fixed scope and milestones, weekly iterations visible on staging, delivered with documentation and handover.', fit: 'Fits: a clear build goal' },
+      { icon: 'clock', t: 'Retainer', d: 'Monthly operations, monitoring, content updates, security upgrades and continuous improvement.', fit: 'Fits: running reliably after launch' },
+    ],
+  },
+  de: {
+    kicker: 'Zusammenarbeit',
+    title: 'Drei Formen der Zusammenarbeit',
+    lead: 'Beginnen Sie mit einer Analyse und erweitern Sie bei Bedarf zu einem Projekt oder laufender Betreuung.',
+    items: [
+      { icon: 'search', t: 'Analyse', d: '1–2 Wochen zu Ist-Zustand, Zielen und Rahmenbedingungen – mit Architekturplan, Angebot und Meilensteinen.', fit: 'Passt, wenn die Richtung steht, die Lösung aber offen ist' },
+      { icon: 'layers', t: 'Projekt', d: 'Fester Umfang und Meilensteine, wöchentliche Iterationen auf Staging, Übergabe mit Dokumentation.', fit: 'Passt bei einem klaren Vorhaben' },
+      { icon: 'clock', t: 'Betreuung', d: 'Monatlicher Betrieb, Monitoring, Inhaltspflege, Sicherheitsupdates und laufende Optimierung.', fit: 'Passt für den stabilen Betrieb nach dem Launch' },
+    ],
+  },
+};
+
+/** Terminal in the hero: this site's real release flow (see README "How changes reach production"). */
+export const pipeline = [
+  { k: 'cmd', a: 'git push origin claude/42-feature' },
+  { k: 'ok', a: 'build', b: 'astro · static · zh / en / de' },
+  { k: 'ok', a: 'check', b: 'typescript strict · ad-law word list' },
+  { k: 'ok', a: 'test', b: 'e2e · 0 third-party requests · 0 cookies' },
+  { k: 'ok', a: 'sign', b: 'ed25519 → github release' },
+  { k: 'run', a: 'deploy', b: 'staging → owner approval → production' },
+] as const;
+
+export const stackLayers: Record<Locale, { t: string; items: string[] }[]> = {
+  zh: [
+    { t: '网站与产品', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: '数据与 AI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: '云与运维', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+  en: [
+    { t: 'Web & product', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: 'Data & AI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: 'Cloud & ops', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+  de: [
+    { t: 'Web & Produkt', items: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'FastAPI'] },
+    { t: 'Daten & KI', items: ['Databricks', 'Apache Spark', 'Delta Lake', 'MLflow', 'Python', 'SQL', 'Power BI', 'LangGraph'] },
+    { t: 'Cloud & Betrieb', items: ['Azure', 'AWS', 'JD Cloud', 'Docker', 'Nginx', 'GitHub Actions', 'Prometheus'] },
+  ],
+};
+
 export const home = {
   zh: {
     title: '惟意科技 Synaping｜中国企业出海欧洲的数字技术伙伴',
@@ -131,6 +196,28 @@ export const home = {
     labsLead: '我们持续投入的技术研究，是服务能力的底座。',
     trust: ['工信部 ICP 备案', '上海 + 慕尼黑 双地团队', '惟意集团旗下品牌'],
     stackTitle: '常用技术',
+    terminalTitle: 'synaping.com · 发布流水线',
+    terminalCap: '本站真实的发布流程：每次变更都经过构建、测试、签名与人工审批。',
+    whyKicker: 'Why Synaping',
+    whyTitle: '为什么选择惟意科技',
+    why: [
+      { icon: 'globe', t: '中欧双地', d: '团队工作和生活在上海与慕尼黑，理解中国企业的决策方式，也熟悉欧洲客户的期待与习惯。' },
+      { icon: 'code', t: '工程优先', d: '以企业级数据平台与云架构的工程标准交付：版本控制、自动化测试、可回滚的发布。' },
+      { icon: 'shield', t: '合规内建', d: 'GDPR 与个人信息保护法的技术要求在架构阶段就纳入设计，而不是上线前临时补救。' },
+      { icon: 'users', t: '一个团队', d: '网站、数据与云由同一团队负责，减少多家供应商之间的沟通与对接成本。' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: '本站即样例',
+    stdLead: '我们对客户项目的要求，首先用在自己的网站上。以下每一项都由自动化测试或构建检查持续验证。',
+    std: [
+      { v: '0', t: '第三方请求', d: '字体、脚本与图片全部自托管' },
+      { v: '0', t: 'Cookie', d: '无追踪、无弹窗，访问即用' },
+      { v: '≤300 KB', t: '页面预算', d: '静态生成，弱网下也能快速打开' },
+      { v: 'Ed25519', t: '签名发布', d: '服务器只接受校验通过的构建' },
+      { v: '3', t: '语言版本', d: '中文、English、Deutsch' },
+      { v: 'AA', t: '无障碍目标', d: '按 WCAG 2.2 AA 设计，支持减少动态效果' },
+    ],
+    bridgeLead: '上海与慕尼黑两地协作，工作时段自然衔接：国内白天提出的问题，欧洲团队可以在当天继续推进。',
   },
   en: {
     title: 'Synaping | Digital technology partner for Chinese companies entering Europe',
@@ -156,6 +243,28 @@ export const home = {
     labsLead: 'Ongoing research that keeps our engineering sharp.',
     trust: ['ICP-registered in China', 'Teams in Shanghai and Munich', 'Part of the Weiyi group'],
     stackTitle: 'Technologies we use',
+    terminalTitle: 'synaping.com · release pipeline',
+    terminalCap: "This site's actual release flow: every change is built, tested, signed and approved by a human.",
+    whyKicker: 'Why Synaping',
+    whyTitle: 'Why work with us',
+    why: [
+      { icon: 'globe', t: 'China and Europe', d: 'Our people work and live in Shanghai and Munich: we understand how Chinese companies decide and what European buyers expect.' },
+      { icon: 'code', t: 'Engineering first', d: 'Delivered to the standards of enterprise data platforms and cloud architecture: version control, automated tests, reversible releases.' },
+      { icon: 'shield', t: 'Compliance by design', d: 'GDPR and PIPL technical requirements are part of the architecture from day one, not patched in before launch.' },
+      { icon: 'users', t: 'One team', d: 'Website, data and cloud from one team, without the overhead of coordinating several vendors.' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: 'This site is the sample',
+    stdLead: 'What we require for client projects, we apply to our own site first. Each item below is checked continuously by automated tests or build checks.',
+    std: [
+      { v: '0', t: 'Third-party requests', d: 'Fonts, scripts and images are all self-hosted' },
+      { v: '0', t: 'Cookies', d: 'No tracking, no consent banner' },
+      { v: '≤300 KB', t: 'Page budget', d: 'Static pages that load fast on weak networks' },
+      { v: 'Ed25519', t: 'Signed releases', d: 'The server only accepts verified builds' },
+      { v: '3', t: 'Languages', d: '中文, English, Deutsch' },
+      { v: 'AA', t: 'Accessibility target', d: 'Designed for WCAG 2.2 AA, honours reduced motion' },
+    ],
+    bridgeLead: 'Shanghai and Munich working hours hand over naturally: a question raised during the Chinese working day can move forward in Europe the same day.',
   },
   de: {
     title: 'Synaping | Technologiepartner für chinesische Unternehmen in Europa',
@@ -181,8 +290,33 @@ export const home = {
     labsLead: 'Laufende Forschung als Fundament unserer Arbeit.',
     trust: ['ICP-registriert in China', 'Teams in Shanghai und München', 'Teil der Weiyi-Gruppe'],
     stackTitle: 'Technologien',
+    terminalTitle: 'synaping.com · Release-Pipeline',
+    terminalCap: 'Der tatsächliche Release-Ablauf dieser Website: Jede Änderung wird gebaut, getestet, signiert und von einem Menschen freigegeben.',
+    whyKicker: 'Why Synaping',
+    whyTitle: 'Warum Synaping',
+    why: [
+      { icon: 'globe', t: 'China und Europa', d: 'Wir arbeiten und leben in Shanghai und München – wir kennen die Entscheidungswege chinesischer Unternehmen und die Erwartungen europäischer Kunden.' },
+      { icon: 'code', t: 'Engineering zuerst', d: 'Umgesetzt nach den Standards von Enterprise-Datenplattformen und Cloud-Architektur: Versionskontrolle, automatisierte Tests, umkehrbare Releases.' },
+      { icon: 'shield', t: 'Compliance by Design', d: 'Technische Anforderungen aus DSGVO und PIPL sind von Anfang an Teil der Architektur – nicht kurz vor dem Launch nachgerüstet.' },
+      { icon: 'users', t: 'Ein Team', d: 'Website, Daten und Cloud aus einer Hand, ohne Abstimmungsaufwand zwischen mehreren Dienstleistern.' },
+    ],
+    stdKicker: 'Engineering standard',
+    stdTitle: 'Diese Website ist das Beispiel',
+    stdLead: 'Was wir für Kundenprojekte fordern, gilt zuerst für unsere eigene Website. Jeder Punkt wird laufend durch automatisierte Tests oder Build-Prüfungen kontrolliert.',
+    std: [
+      { v: '0', t: 'Drittanbieter-Anfragen', d: 'Schriften, Skripte und Bilder selbst gehostet' },
+      { v: '0', t: 'Cookies', d: 'Kein Tracking, kein Cookie-Banner' },
+      { v: '≤300 KB', t: 'Seitenbudget', d: 'Statische Seiten, schnell auch bei schwachem Netz' },
+      { v: 'Ed25519', t: 'Signierte Releases', d: 'Der Server akzeptiert nur verifizierte Builds' },
+      { v: '3', t: 'Sprachen', d: '中文, English, Deutsch' },
+      { v: 'AA', t: 'Barrierefreiheit', d: 'Ausgelegt auf WCAG 2.2 AA, respektiert reduzierte Bewegung' },
+    ],
+    bridgeLead: 'Die Arbeitszeiten in Shanghai und München greifen ineinander: Was am chinesischen Arbeitstag aufkommt, kann in Europa noch am selben Tag weiterlaufen.',
   },
 } satisfies L<Record<string, unknown>>;
+
+// matrix rows map to tiers: Starter = first 3, Growth = first 6, Data = all (mirrors the tier descriptions).
+export const kitTierRows = [3, 6, 8];
 
 export const kit = {
   zh: {
@@ -213,7 +347,7 @@ export const kit = {
   },
 };
 
-export interface Case { slug: string; title: L<string>; summary: L<string>; challenge: L<string>; approach: L<string[]>; result: L<string>; tags: string[] }
+export interface Case { slug: string; title: L<string>; summary: L<string>; challenge: L<string>; approach: L<string[]>; arch: L<Arch>; result: L<string>; stack: string[]; tags: string[]; url?: string }
 export const cases: Case[] = [
   {
     slug: 'weiyiliuxue',
@@ -224,6 +358,22 @@ export const cases: Case[] = [
       zh: ['React 前端 + Python API + 容器化部署', 'Nginx 反向代理与 HTTPS 证书自动化', 'GitHub Actions 推送即部署'],
       en: ['React front end, Python API, containerised deployment', 'Nginx reverse proxy with automated HTTPS', 'Push-to-deploy with GitHub Actions'],
     },
+    arch: {
+      zh: [
+        { t: '访客', items: ['中国大陆用户', '中英双语页面'], tone: 'amber' },
+        { t: '边缘', items: ['Nginx 反向代理', 'HTTPS 证书自动化'] },
+        { t: '应用', items: ['React 前端', 'Python API', '容器化服务'], tone: 'violet' },
+        { t: '交付', items: ['GitHub Actions', '推送即部署', '德国团队远程维护'] },
+      ],
+      en: [
+        { t: 'Visitors', items: ['Users in mainland China', 'Chinese and English pages'], tone: 'amber' },
+        { t: 'Edge', items: ['Nginx reverse proxy', 'Automated HTTPS certificates'] },
+        { t: 'Application', items: ['React front end', 'Python API', 'Containerised services'], tone: 'violet' },
+        { t: 'Delivery', items: ['GitHub Actions', 'Push-to-deploy', 'Maintained remotely from Germany'] },
+      ],
+    },
+    stack: ['React', 'Python', 'Docker', 'Nginx', 'GitHub Actions'],
+    url: 'https://weiyiliuxue.com/',
     result: { zh: '网站已稳定运行，支持团队成员、服务与资讯页面的持续更新。', en: 'The site runs reliably and supports ongoing updates to team, service and news pages.' },
     tags: ['Web', 'Cloud', 'ICP'],
   },
@@ -236,6 +386,20 @@ export const cases: Case[] = [
       zh: ['Astro 静态生成 + Tailwind CSS', '自托管字体，无谷歌字体或外部 CDN', 'hreflang、Open Graph 与结构化数据'],
       en: ['Astro static generation + Tailwind CSS', 'Self-hosted fonts; no Google Fonts or external CDN', 'hreflang, Open Graph and structured data'],
     },
+    arch: {
+      zh: [
+        { t: '内容', items: ['中英双语内容', 'hreflang 与 Open Graph', '结构化数据'] },
+        { t: '构建', items: ['Astro 静态生成', 'Tailwind CSS', '自托管字体'], tone: 'violet' },
+        { t: '发布', items: ['静态托管', '零第三方请求', '无 Cookie'], tone: 'amber' },
+      ],
+      en: [
+        { t: 'Content', items: ['Chinese and English content', 'hreflang and Open Graph', 'Structured data'] },
+        { t: 'Build', items: ['Astro static generation', 'Tailwind CSS', 'Self-hosted fonts'], tone: 'violet' },
+        { t: 'Publish', items: ['Static hosting', 'Zero third-party requests', 'No cookies'], tone: 'amber' },
+      ],
+    },
+    stack: ['Astro', 'TypeScript', 'Tailwind CSS'],
+    url: 'https://wang-yuhao.github.io/weiyi-international-website/',
     result: { zh: '页面轻量、加载快，满足双语 SEO 与隐私要求。', en: 'Lightweight, fast pages that meet bilingual SEO and privacy requirements.' },
     tags: ['Web', 'GDPR', 'SEO'],
   },
@@ -245,15 +409,30 @@ export const cases: Case[] = [
     summary: { zh: '本网站由 AI 编码助手夜间开发，经自动化测试与人工审批后发布到北京服务器。', en: 'This website is built overnight by an AI coding assistant and released to a Beijing server after automated tests and human approval.' },
     challenge: { zh: '在 GitHub 与中国大陆服务器之间，建立安全、可回滚、无需 SSH 密钥外泄风险的发布流程。', en: 'A secure, reversible release path between GitHub and a mainland server, without exposing SSH keys.' },
     approach: {
-      zh: ['构建与测试在无密钥环境中运行', '签名后的构建包上传至对象存储，服务器定时拉取并校验', '健康检查失败自动回滚；生产发布需人工批准'],
-      en: ['Build and tests run with no secrets', 'Signed build artifacts go to object storage; the server pulls and verifies them', 'Automatic rollback on failed health checks; production needs human approval'],
+      zh: ['构建与测试在无密钥环境中运行', '构建包经 Ed25519 签名后发布为 GitHub Release，服务器主动拉取并校验', '健康检查失败自动回滚；生产发布需人工批准'],
+      en: ['Build and tests run with no secrets', 'Build artifacts are Ed25519-signed and published as GitHub Releases; the server pulls and verifies them', 'Automatic rollback on failed health checks; production needs human approval'],
     },
+    arch: {
+      zh: [
+        { t: '开发', items: ['夜间 AI 编码助手', '一个 Issue 对应一个 PR', '受保护路径需人工审核'], tone: 'violet' },
+        { t: 'CI', items: ['构建、类型检查与 e2e 测试', '广告法词表检查', '无密钥运行'] },
+        { t: '发布', items: ['Ed25519 签名', 'GitHub Release', 'staging / prod 指针'], tone: 'amber' },
+        { t: '服务器', items: ['拉取并校验签名', '预发布环境自动更新', '人工批准后上线', '失败自动回滚'] },
+      ],
+      en: [
+        { t: 'Develop', items: ['AI coding assistant at night', 'One issue, one PR', 'Protected paths need human review'], tone: 'violet' },
+        { t: 'CI', items: ['Build, type check, e2e tests', 'Advertising-law word check', 'No secrets'] },
+        { t: 'Release', items: ['Ed25519 signature', 'GitHub Release', 'staging / prod pointers'], tone: 'amber' },
+        { t: 'Server', items: ['Pull and verify signature', 'Staging updates automatically', 'Production after approval', 'Auto-rollback on failure'] },
+      ],
+    },
+    stack: ['Astro', 'GitHub Actions', 'Playwright', 'Ed25519', 'Nginx', 'JD Cloud'],
     result: { zh: '每次发布可追溯、可回滚，夜间迭代、白天审核。', en: 'Every release is traceable and reversible: built at night, reviewed in the morning.' },
     tags: ['DevOps', 'Security', 'AI'],
   },
 ];
 
-export interface Lab { slug: string; title: L<string>; summary: L<string>; body: L<string[]>; disclaimer?: L<string>; demo?: boolean; tags: string[] }
+export interface Lab { slug: string; title: L<string>; summary: L<string>; body: L<string[]>; arch: L<Arch>; highlights: L<{ t: string; d: string }[]>; stack: string[]; refs?: { label: string; url: string }[]; disclaimer?: L<string>; demo?: boolean; tags: string[] }
 export const labs: Lab[] = [
   {
     slug: 'quant-research-infrastructure',
@@ -262,17 +441,48 @@ export const labs: Lab[] = [
     body: {
       zh: [
         '我们搭建了一套用于策略研究的工程基础设施：统一的数据接入层、事件驱动的回测引擎，以及按时间窗口滚动的 walk-forward 样本外评估框架。',
-        '风控模块在回测与实盘模拟中保持一致的规则，例如按自然日重置的日内亏损上限，避免回测与执行逻辑不一致导致的偏差。',
+        '系统采用分层（六边形）架构：领域层不依赖数据库、行情或券商接口，所有外部依赖都在外层的适配器中，因此风控与因果性规则可以用快速的单元测试逐条验证。',
+        '风控模块在回测与模拟交易中保持一致的规则，例如按自然日重置的日内亏损上限；任何不确定状态（行情过期、配置含糊）都按"失败即停止"处理，避免回测与执行逻辑不一致导致的偏差。',
         '多智能体研究流程将数据检查、假设生成与结果复核分配给不同的 AI 角色，最终结论由人工审核。',
         '下方演示使用随机生成的模拟数据，仅用于展示 walk-forward 方法的分段结构。',
       ],
       en: [
         'We built engineering infrastructure for strategy research: a unified data layer, an event-driven backtesting engine and a rolling walk-forward framework for out-of-sample evaluation.',
-        'The risk module applies the same rules in backtests and paper trading — for example a daily loss limit that resets at each calendar day — so research and execution logic cannot drift apart.',
+        'The system follows a layered (hexagonal) architecture: the domain layer has no dependency on databases, market data or broker APIs; every external dependency lives in adapters at the edge, so risk and causality rules can be verified one by one with fast unit tests.',
+        'The risk module applies the same rules in backtests and paper trading — for example a daily loss limit that resets at each calendar day. Any uncertain state (stale prices, ambiguous configuration) fails closed, so research and execution logic cannot drift apart.',
         'A multi-agent research workflow assigns data checks, hypothesis generation and result review to different AI roles; humans sign off on conclusions.',
         'The demo below uses randomly generated synthetic data and only illustrates how walk-forward folds are structured.',
       ],
     },
+    arch: {
+      zh: [
+        { t: '数据层', items: ['行情采集与短期缓存', '时序数据库持久化', '数据质量校验'], tone: 'amber' },
+        { t: '研究层', items: ['事件驱动回测引擎', 'Walk-forward 分段与无重叠校验', '按时间顺序、带隔离期的训练 / 测试切分'] },
+        { t: '风控层', items: ['下单前规则检查', '行情过期即拒绝', '外部可触发的紧急停止开关'], tone: 'violet' },
+        { t: '执行层', items: ['默认模拟交易', '实盘需双重显式确认', '订单意图幂等与对账'] },
+      ],
+      en: [
+        { t: 'Data', items: ['Market-data ingestion and short-lived cache', 'Time-series database', 'Data-quality checks'], tone: 'amber' },
+        { t: 'Research', items: ['Event-driven backtesting engine', 'Walk-forward folds with no-overlap checks', 'Chronological, purged train / test splits'] },
+        { t: 'Risk', items: ['Pre-order rule checks', 'Reject on stale prices', 'Externally triggered kill switch'], tone: 'violet' },
+        { t: 'Execution', items: ['Paper trading by default', 'Live mode needs two explicit confirmations', 'Idempotent order intents and reconciliation'] },
+      ],
+    },
+    highlights: {
+      zh: [
+        { t: '因果性测试', d: '每个测试对应一条明确的断言：未来数据不能改变过去的结果、同一根 K 线不能成交、重试只产生一个订单、机器学习无数据泄漏。' },
+        { t: '失败即停止', d: '模拟 / 实盘切换需要两项独立配置；含糊配置在启动时直接报错。紧急停止开关可从进程外部触发。' },
+        { t: '可观测的安全状态', d: '存活、就绪与安全状态分别提供健康检查端点；安全端点在条件不满足时返回 503 并列出全部阻断原因。' },
+        { t: '真实依赖的 CI', d: '持续集成使用真实的时序数据库服务运行测试，被跳过的测试视为失败，并在测试开始前断言处于模拟模式。' },
+      ],
+      en: [
+        { t: 'Causality tests', d: 'Each test file pins one claim: a future bar cannot change a past result, no same-bar fills, a retry yields one order, no ML leakage.' },
+        { t: 'Fail closed', d: 'Switching from paper to live needs two independent settings; ambiguous configuration fails at startup. The kill switch can be triggered from outside the process.' },
+        { t: 'Observable safety state', d: 'Separate liveness, readiness and safety endpoints; the safety endpoint returns 503 and lists every blocker when conditions are not met.' },
+        { t: 'CI with real dependencies', d: 'CI runs against a real time-series database service, treats skipped tests as failures and asserts paper mode before any test runs.' },
+      ],
+    },
+    stack: ['Python', 'asyncio', 'TimescaleDB', 'Redis', 'pandas', 'scikit-learn', 'pydantic', 'Docker Compose', 'pytest'],
     disclaimer: { zh: '仅为技术研究，不构成投资建议。本页不展示任何真实收益、策略参数或交易信号。', en: 'Technical research only; not investment advice. No real returns, strategy parameters or trading signals are shown.' },
     demo: true,
     tags: ['Python', 'Backtesting', 'Multi-agent'],
@@ -284,15 +494,52 @@ export const labs: Lab[] = [
     body: {
       zh: [
         'NeuroLab 是我们在科研数据工程方向的实验项目：将原始睡眠脑电数据按 Bronze / Silver / Gold 三层组织，实现可追溯、可复现的处理流程。',
-        '特征层结合睡眠分期、纺锤波与慢波检测，以及持久同调（Persistent Homology）等拓扑数据分析方法。',
+        '数据来自公开的 PhysioNet Sleep-EDF 睡眠记录。原始 EDF 文件通过 Auto Loader 增量进入 Bronze 层；Silver 层完成带通滤波、伪迹检测与 30 秒分期切分，并检测睡眠纺锤波与慢波；Gold 层汇总时域、频域与拓扑特征。',
+        '拓扑特征使用持久同调（Persistent Homology）等拓扑数据分析方法，与传统的时频特征互为补充。',
+        '在方法验证上，我们用 Python 复现了已发表的睡眠振荡研究：基于公开的颅内脑电数据集，检测慢波、纺锤波与涟漪，并用相位–振幅耦合与聚类置换检验分析三者的嵌套关系。',
         '这一实践与企业数据平台的方法相通：分层建模、数据质量校验、元数据管理与可复现计算。',
       ],
       en: [
         'NeuroLab is our research data-engineering project: raw sleep EEG is organised into Bronze / Silver / Gold layers for a traceable, reproducible pipeline.',
-        'The feature layer combines sleep staging, spindle and slow-oscillation detection with topological data analysis such as persistent homology.',
+        'The data are public PhysioNet Sleep-EDF recordings. Raw EDF files arrive incrementally in Bronze via Auto Loader; Silver applies band-pass filtering, artefact detection and 30-second epoching and detects sleep spindles and slow oscillations; Gold aggregates time-domain, frequency-domain and topological features.',
+        'Topological features use methods such as persistent homology and complement classical time–frequency features.',
+        'To validate methods, we reproduced published sleep-oscillation research in Python: on a public intracranial EEG dataset we detect slow oscillations, spindles and ripples and analyse how they nest, using phase–amplitude coupling and cluster-based permutation tests.',
         'The same methods power enterprise data platforms: layered modelling, data-quality checks, metadata management and reproducible computation.',
       ],
     },
+    arch: {
+      zh: [
+        { t: 'Bronze', items: ['Auto Loader 增量采集 EDF', 'Schema 演进', '原始记录留存'], tone: 'amber' },
+        { t: 'Silver', items: ['0.5–30 Hz 带通滤波', '伪迹检测与 30 秒分期', '纺锤波与慢波检测', 'Delta Live Tables 质量规则'] },
+        { t: 'Gold', items: ['时域、频域与拓扑特征', '受试者级汇总', 'OPTIMIZE 与 Z-ORDER'] },
+        { t: '应用与治理', items: ['MLflow 睡眠分期模型', '持久同调研究', 'Unity Catalog 权限、列脱敏与血缘'], tone: 'violet' },
+      ],
+      en: [
+        { t: 'Bronze', items: ['Auto Loader incremental EDF ingest', 'Schema evolution', 'Raw records retained'], tone: 'amber' },
+        { t: 'Silver', items: ['0.5–30 Hz band-pass filter', 'Artefact detection, 30 s epochs', 'Spindle and slow-oscillation detection', 'Delta Live Tables expectations'] },
+        { t: 'Gold', items: ['Time, frequency and topological features', 'Subject-level aggregates', 'OPTIMIZE and Z-ORDER'] },
+        { t: 'Apps & governance', items: ['MLflow sleep-staging models', 'Persistent-homology research', 'Unity Catalog RBAC, column masking, lineage'], tone: 'violet' },
+      ],
+    },
+    highlights: {
+      zh: [
+        { t: '声明式数据质量', d: '在 Bronze 与 Silver 层用 Delta Live Tables 期望规则校验时间戳与信号有效性，不合格数据被拦截，而不是静默流入下游。' },
+        { t: '治理与权限', d: 'Unity Catalog 按数据工程、研究与机器学习角色分级授权，敏感字段列级脱敏，并保留审计日志与血缘。' },
+        { t: '环境与发布', d: '通过 GitHub Actions 与 Databricks Asset Bundles，在开发、预发布与生产环境之间自动化测试与部署。' },
+        { t: '可复现的科研方法', d: '复现项目以单一 YAML 配置驱动全部参数，事件检测函数注明方法与文献出处，并在多个 Python 版本上运行持续集成测试。' },
+      ],
+      en: [
+        { t: 'Declarative data quality', d: 'Delta Live Tables expectations validate timestamps and signal quality in Bronze and Silver; bad records are stopped instead of silently flowing downstream.' },
+        { t: 'Governance and access', d: 'Unity Catalog grants access by role (data engineering, research, ML), masks sensitive columns and keeps audit logs and lineage.' },
+        { t: 'Environments and releases', d: 'GitHub Actions and Databricks Asset Bundles automate tests and deployment across dev, staging and production.' },
+        { t: 'Reproducible science', d: 'The reproduction is driven by a single YAML config; every detector documents its method and citation, with CI across several Python versions.' },
+      ],
+    },
+    stack: ['Databricks', 'Apache Spark', 'Delta Lake', 'Delta Live Tables', 'Unity Catalog', 'MLflow', 'MNE', 'SciPy', 'YASA'],
+    refs: [
+      { label: 'PhysioNet Sleep-EDF', url: 'https://physionet.org/content/sleep-edfx/' },
+      { label: 'Staresina et al., 2015, Nature Neuroscience', url: 'https://doi.org/10.1038/nn.4119' },
+    ],
     tags: ['Databricks', 'Delta Lake', 'TDA'],
   },
 ];

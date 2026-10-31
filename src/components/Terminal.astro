@@ -1,0 +1,24 @@
+---
+// Code-style console card. Lines fade in one by one with CSS only; shown fully under reduced motion.
+export interface TermLine { k: 'cmd' | 'ok' | 'run' | 'note'; a: string; b?: string }
+interface Props { title: string; lines: TermLine[]; class?: string }
+const { title, lines, class: cls } = Astro.props;
+const mark = { cmd: '$', ok: '✓', run: '→', note: '#' };
+const color = { cmd: 'text-slate-100', ok: 'text-emerald-300', run: 'text-cyan-300', note: 'text-slate-400' };
+---
+<div class:list={['card card-glow overflow-hidden shadow-2xl shadow-cyan-500/5', cls]}>
+  <div class="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+    <span class="h-2.5 w-2.5 rounded-full bg-rose-400/70"></span><span class="h-2.5 w-2.5 rounded-full bg-amber-300/70"></span><span class="h-2.5 w-2.5 rounded-full bg-emerald-400/70"></span>
+    <span class="ml-3 font-mono-ui text-xs text-slate-400 truncate">{title}</span>
+  </div>
+  <ol class="font-mono-ui text-[11px] sm:text-[12.5px] leading-6 p-4 sm:p-5 overflow-x-auto">
+    {lines.map((l, i) => (
+      <li class="term-line flex gap-3 whitespace-nowrap" style={`animation-delay:${0.25 + i * 0.35}s`}>
+        <span class:list={['w-3 shrink-0', color[l.k]]}>{mark[l.k]}</span>
+        <span class:list={[l.k === 'cmd' ? 'text-slate-100' : 'text-slate-300', l.b && 'w-16 shrink-0']}>{l.a}</span>
+        {l.b && <span class="text-slate-400">{l.b}</span>}
+      </li>
+    ))}
+    <li class="term-line caret mt-1 text-slate-500" style={`animation-delay:${0.25 + lines.length * 0.35}s`} aria-hidden="true"></li>
+  </ol>
+</div>
