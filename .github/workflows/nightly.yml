@@ -31,12 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
       - env: { GH_TOKEN: '${{ github.token }}' }
         run: gh issue edit ${{ matrix.issue }} --add-label in-progress
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--max-turns 60'
+          claude_args: '--max-turns 60 --allowedTools "Edit,Write,Read,Glob,Grep,Bash(pnpm:*),Bash(git:*),Bash(gh:*),Bash(node:*),Bash(ls:*),Bash(cat:*)"'
           prompt: |
             You are working unattended overnight on repo ${{ github.repository }}.
             Read CLAUDE.md first and follow it strictly. Implement GitHub issue #${{ matrix.issue }} (read it with `gh issue view ${{ matrix.issue }}`).

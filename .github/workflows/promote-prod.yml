@@ -1,43 +1,41 @@
-# Promote the release currently on staging to production. Requires approval (environment: production).
+# Promote the build currently on staging (or a given SHA) to production. Requires approval (environment: production).
+# The server picks up the signed channel-prod manifest within ~2 minutes; this job then checks www.synaping.com/build.json.
 name: promote-prod
-on: { workflow_dispatch: { inputs: { sha: { description: 'commit SHA (default: current staging)', required: false } } } }
+on: { workflow_dispatch: { inputs: { sha: { description: 'commit SHA (default: what staging runs now)', required: false } } } }
 permissions: { contents: read }
 concurrency: { group: promote-prod, cancel-in-progress: false }
 jobs:
   promote:
     runs-on: ubuntu-latest
     environment: production
-    timeout-minutes: 20
-    env:
-      OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT || 'https://s3.cn-north-1.jdcloud-oss.com' }}
-      BUCKET: ${{ vars.OSS_BUCKET || 'synaping-artifacts' }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.OSS_AK }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SK }}
-      AWS_DEFAULT_REGION: cn-north-1
+    permissions: { contents: write }
+    timeout-minutes: 30
+    env: { GH_TOKEN: '${{ github.token }}', R: '${{ github.repository }}' }
     steps:
-      - name: Read staging manifest
+      - name: Resolve build
         run: |
           set -euo pipefail
-          aws s3 cp "s3://$BUCKET/staging/manifest.json" staging.json --endpoint-url "$OSS_ENDPOINT"
-          sha="${{ inputs.sha }}"; [ -z "$sha" ] && sha=$(jq -r .sha staging.json)
-          sum=$(aws s3 cp "s3://$BUCKET/releases/$sha/site.tar.gz" - --endpoint-url "$OSS_ENDPOINT" | sha256sum | cut -d' ' -f1)
-          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"prod"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" > manifest.json
+          sha="${{ inputs.sha }}"
+          if [ -z "$sha" ]; then gh release download channel-staging -R $R -p manifest.json -O staging.json; sha=$(jq -r .sha staging.json); fi
+          short=${sha:0:12}
+          gh release download "build-$short" -R $R -p site.tar.gz -O site.tar.gz
+          sum=$(sha256sum site.tar.gz | cut -d' ' -f1)
+          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"prod","tag":"build-%s"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" "$short" > manifest.json
           echo "SHA=$sha" >> $GITHUB_ENV
-      - name: Sign and publish prod manifest
+      - name: Sign and publish prod pointer
         env: { SIGNING_KEY: '${{ secrets.SIGNING_KEY }}' }
         run: |
+          set -euo pipefail
           printf '%s' "$SIGNING_KEY" > key.pem
           openssl pkeyutl -sign -inkey key.pem -rawin -in manifest.json | base64 -w0 > manifest.sig; rm key.pem
-          aws s3 cp manifest.json "s3://$BUCKET/prod/manifest.json" --endpoint-url "$OSS_ENDPOINT"
-          aws s3 cp manifest.sig  "s3://$BUCKET/prod/manifest.sig"  --endpoint-url "$OSS_ENDPOINT"
-      - name: Wait for the server health report (fail closed after 10 min)
+          gh release view channel-prod -R $R >/dev/null 2>&1 || \
+            gh release create channel-prod -R $R --target "$SHA" --prerelease --title "channel: prod" --notes "Pointer to the build www.synaping.com should run. Managed by promote-prod."
+          gh release upload channel-prod -R $R manifest.json manifest.sig --clobber
+      - name: Wait until production serves this build (fail closed after 20 min)
         run: |
-          for i in $(seq 1 40); do
-            if aws s3 cp "s3://$BUCKET/status/prod.json" status.json --endpoint-url "$OSS_ENDPOINT" 2>/dev/null \
-               && [ "$(jq -r .sha status.json)" = "$SHA" ]; then
-              cat status.json; [ "$(jq -r .result status.json)" = "ok" ] && exit 0
-              echo "::error::Server reported failure and rolled back"; exit 1
-            fi
+          for i in $(seq 1 80); do
+            got=$(curl -fsS --max-time 15 "https://www.synaping.com/build.json?t=$(date +%s)" | jq -r .sha 2>/dev/null || true)
+            [ "$got" = "$SHA" ] && { echo "Production now serves $SHA"; exit 0; }
             sleep 15
           done
-          echo "::error::No health report from server within 10 minutes"; exit 1
+          echo "::error::www.synaping.com still serves '${got:-unknown}' — the server may have rejected or rolled back the release (see journalctl -u synaping-pull on the server)"; exit 1

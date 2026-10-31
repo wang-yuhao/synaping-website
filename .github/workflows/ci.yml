@@ -18,6 +18,8 @@ jobs:
       - run: pnpm lint:ad-law
       - run: pnpm check
       - run: pnpm build
+      - name: Stamp build id (used by promote-prod to confirm the server switched)
+        run: printf '{"sha":"%s","built":"%s"}\n' "$GITHUB_SHA" "$(date -u +%FT%TZ)" > dist/build.json
       - name: Size budget (≤300 KB per page HTML+CSS+JS excluding fonts/images)
         run: |
           total=$(du -sk dist/_astro --exclude='*.woff2' | cut -f1); echo "assets: ${total} KB"

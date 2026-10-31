@@ -1,4 +1,7 @@
-# Build (no secrets) → sign + upload to JD Cloud OSS (environment: staging). The server pulls and verifies.
+# Build (no secrets) → sign → publish as a GitHub Release. The JD Cloud server pulls from
+# https://github.com/<repo>/releases/download/... (public, no credentials) and verifies the Ed25519 signature.
+#   build-<sha12>      immutable release holding site.tar.gz
+#   channel-staging    moving pointer: manifest.json + manifest.sig (which build staging should run)
 name: publish-staging
 on:
   workflow_dispatch:
@@ -12,34 +15,40 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment: staging
-    env:
-      OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT || 'https://s3.cn-north-1.jdcloud-oss.com' }}
-      BUCKET: ${{ vars.OSS_BUCKET || 'synaping-artifacts' }}
+    permissions: { contents: write }
+    env: { GH_TOKEN: '${{ github.token }}', R: '${{ github.repository }}' }
     steps:
       # No checkout: only the built artifact is handled here.
       - uses: actions/download-artifact@v4
         with: { name: dist, path: dist }
-      - name: Check secrets
+      - name: Check signing key
         id: s
         run: |
-          if [ -z "${{ secrets.OSS_AK }}" ] || [ -z "${{ secrets.SIGNING_KEY }}" ]; then echo "ready=false" >> $GITHUB_OUTPUT; echo "::warning::OSS_AK or SIGNING_KEY not configured — skipping upload"; else echo "ready=true" >> $GITHUB_OUTPUT; fi
-      - name: Package, sign, upload
+          if [ -z "${{ secrets.SIGNING_KEY }}" ]; then echo "ready=false" >> $GITHUB_OUTPUT; echo "::warning::SIGNING_KEY not configured — skipping publish"; else echo "ready=true" >> $GITHUB_OUTPUT; fi
+      - name: Package, sign, publish
         if: steps.s.outputs.ready == 'true'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.OSS_AK }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SK }}
-          AWS_DEFAULT_REGION: cn-north-1
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        env: { SIGNING_KEY: '${{ secrets.SIGNING_KEY }}' }
         run: |
           set -euo pipefail
-          sha=${{ github.sha }}
+          sha=${{ github.sha }}; short=${sha:0:12}
           tar --sort=name --owner=0 --group=0 --numeric-owner -C dist -czf site.tar.gz .
           sum=$(sha256sum site.tar.gz | cut -d' ' -f1)
-          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"staging"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" > manifest.json
+          printf '{"sha":"%s","sha256":"%s","created":"%s","channel":"staging","tag":"build-%s"}\n' "$sha" "$sum" "$(date -u +%FT%TZ)" "$short" > manifest.json
           printf '%s' "$SIGNING_KEY" > key.pem
           openssl pkeyutl -sign -inkey key.pem -rawin -in manifest.json | base64 -w0 > manifest.sig
           rm key.pem
-          aws s3 cp site.tar.gz  "s3://$BUCKET/releases/$sha/site.tar.gz" --endpoint-url "$OSS_ENDPOINT"
-          aws s3 cp manifest.json "s3://$BUCKET/staging/manifest.json" --endpoint-url "$OSS_ENDPOINT"
-          aws s3 cp manifest.sig  "s3://$BUCKET/staging/manifest.sig"  --endpoint-url "$OSS_ENDPOINT"
-          echo "Published $sha to staging"
+          gh release view "build-$short" -R $R >/dev/null 2>&1 || \
+            gh release create "build-$short" -R $R --target "$sha" --prerelease --title "build $short" --notes "Automated site build of $sha" site.tar.gz
+          gh release view channel-staging -R $R >/dev/null 2>&1 || \
+            gh release create channel-staging -R $R --target "$sha" --prerelease --title "channel: staging" --notes "Pointer to the build staging.synaping.com should run. Managed by publish-staging."
+          gh release upload channel-staging -R $R manifest.json manifest.sig --clobber
+          echo "Published $short to staging"
+      - name: Prune old builds (keep 20 + whatever prod/staging point to)
+        if: steps.s.outputs.ready == 'true'
+        run: |
+          keep=""
+          for ch in channel-prod channel-staging; do
+            rm -f p.json; gh release download $ch -R $R -p manifest.json -O p.json 2>/dev/null && keep="$keep $(jq -r .tag p.json)"
+          done
+          gh release list -R $R --limit 200 --json tagName,createdAt -q '[.[]|select(.tagName|startswith("build-"))]|sort_by(.createdAt)|reverse|.[20:][]|.tagName' \
+            | while read -r t; do case " $keep " in *" $t "*) ;; *) gh release delete "$t" -R $R --yes --cleanup-tag ;; esac; done
