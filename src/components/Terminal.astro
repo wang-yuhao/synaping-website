@@ -1,5 +1,5 @@
 ---
-// Code-style console card. Lines fade in one by one with CSS only; shown fully under reduced motion.
+// Code-style console card. Lines type in one by one (clip-path, so contrast is never reduced) with CSS only; shown fully under reduced motion.
 export interface TermLine { k: 'cmd' | 'ok' | 'run' | 'note'; a: string; b?: string }
 interface Props { title: string; lines: TermLine[]; class?: string }
 const { title, lines, class: cls } = Astro.props;
@@ -19,6 +19,6 @@ const color = { cmd: 'text-slate-100', ok: 'text-emerald-300', run: 'text-cyan-3
         {l.b && <span class="text-slate-400">{l.b}</span>}
       </li>
     ))}
-    <li class="term-line caret mt-1 text-slate-500" style={`animation-delay:${0.25 + lines.length * 0.35}s`} aria-hidden="true"></li>
+    <li class="term-line caret mt-1 text-slate-400" style={`animation-delay:${0.25 + lines.length * 0.35}s`} aria-hidden="true"></li>
   </ol>
 </div>

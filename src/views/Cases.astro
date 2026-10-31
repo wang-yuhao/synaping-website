@@ -14,7 +14,7 @@ const T = { zh: { k: '案例', t: '我们做过的项目', l: '以下项目均�
       <div class="flex gap-2">{c.tags.map((tg) => <span class="chip !text-[11px]">{tg}</span>)}</div>
       <h2 class="mt-4 text-lg font-semibold text-white">{c.title[locale]}</h2>
       <p class="mt-3 text-sm text-slate-400 leading-relaxed">{c.summary[locale]}</p>
-      <p class="mt-auto pt-5 font-mono-ui text-[11px] text-slate-500">{c.stack.join(' · ')}</p>
+      <p class="mt-auto pt-5 font-mono-ui text-[11px] text-slate-400">{c.stack.join(' · ')}</p>
     </a>
   ))}
 </section>
