@@ -117,3 +117,28 @@ issues:
     milestone: "M3 Ops & launch"
     labels: [owner-task]
     body: Run promote-prod, approve, verify, then Baidu/360/Sogou/Bing sitemaps and monitoring.
+  # ---------- follow-ups from the site enrichment PRs ----------
+  - title: "Owner: proofread new en/de copy from the site enrichment"
+    milestone: "M2 Content"
+    labels: [owner-task, needs-review]
+    body: |
+      New machine-drafted copy in src/content/site.ts: home (why, standards, engagement, stack), service method/FAQ, kit timeline/matrix, about principles, lab pages.
+      German: home sections and services overview only. Fix wording directly or comment on the lines.
+  - title: "Owner: confirm NeuroLab facts and decide on linking the lab repos"
+    milestone: "M2 Content"
+    labels: [owner-task, decision-needed]
+    body: |
+      Lab pages describe architecture only and do not link GitHub. Before linking: remove interview/employer notes from the databricks-eeg-lakehouse-lab README and keep concrete risk limits out of public trading-bot docs.
+      Add any numbers you want shown (accuracy, speedups) to docs/content-facts.md first.
+  - title: "Visual baselines for the enriched pages"
+    milestone: "M1 Quality"
+    labels: [owner-review]
+    body: Generate Playwright visual baselines (desktop + mobile) for /, /services/*, /cases/*, /labs/*, /solutions/eu-launch-kit/ once the enrichment PRs are merged. Touches tests/**.
+  - title: "Playwright webServer: use a cross-platform static server"
+    milestone: "M1 Quality"
+    labels: [owner-review]
+    body: playwright.config webServer calls python3, which does not exist on Windows. Use `pnpm astro preview` (or `python` fallback) so `pnpm test:e2e` runs locally on all platforms.
+  - title: "Self-host JetBrains Mono for code/terminal UI"
+    milestone: "M1 Quality"
+    labels: [owner-review]
+    body: Terminal, kicker and chip styles use a system mono stack. Add @fontsource/jetbrains-mono (latin subset, woff2, self-hosted) and point .font-mono-ui at it; stays within the 300 KB budget. Touches package.json.
