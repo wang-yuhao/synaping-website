@@ -10,10 +10,11 @@ const T = { zh: { k: '案例', t: '我们做过的项目', l: '以下项目均�
 <PageHead kicker={T.k} title={T.t} lead={T.l} />
 <section class="mx-auto max-w-7xl px-5 py-16 grid gap-6 md:grid-cols-3">
   {cases.map((c) => (
-    <a href={localePath(locale, `cases/${c.slug}/`)} class="card p-7 block transition-colors">
-      <div class="flex gap-2">{c.tags.map((tg) => <span class="text-[11px] rounded-full border border-slate-600 px-2 py-0.5 text-slate-300">{tg}</span>)}</div>
+    <a href={localePath(locale, `cases/${c.slug}/`)} class="card card-glow p-7 flex flex-col transition-colors">
+      <div class="flex gap-2">{c.tags.map((tg) => <span class="chip !text-[11px]">{tg}</span>)}</div>
       <h2 class="mt-4 text-lg font-semibold text-white">{c.title[locale]}</h2>
       <p class="mt-3 text-sm text-slate-400 leading-relaxed">{c.summary[locale]}</p>
+      <p class="mt-auto pt-5 font-mono-ui text-[11px] text-slate-500">{c.stack.join(' · ')}</p>
     </a>
   ))}
 </section>

@@ -10,11 +10,11 @@ const T = { zh: { t: '研发实验室', l: '我们在量化研究工程与科研
 <PageHead kicker="Labs" title={T.t} lead={T.l} />
 <section class="mx-auto max-w-7xl px-5 py-16 grid gap-6 md:grid-cols-2">
   {labs.map((l) => (
-    <a href={localePath(locale, `labs/${l.slug}/`)} class="card p-8 block transition-colors">
+    <a href={localePath(locale, `labs/${l.slug}/`)} class="card card-glow p-8 block transition-colors">
       <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-violet-500/15 text-violet-200"><Icon name="lab" /></span>
       <h2 class="mt-5 text-xl font-semibold text-white">{l.title[locale]}</h2>
       <p class="mt-3 text-slate-400">{l.summary[locale]}</p>
-      <ul class="mt-4 flex gap-2">{l.tags.map((t) => <li class="text-[11px] rounded-full border border-slate-600 px-2 py-0.5 text-slate-300">{t}</li>)}</ul>
+      <ul class="mt-5 flex flex-wrap gap-1.5">{l.stack.map((t) => <li class="chip !text-[11px]">{t}</li>)}</ul>
     </a>
   ))}
 </section>
