@@ -100,7 +100,7 @@ issues:
     milestone: "M3 Ops & launch"
     labels: [owner-task]
     body: |
-      Repo settings (allow auto-merge, environments staging/production), CLAUDE_CODE_OAUTH_TOKEN, JD OSS bucket + sub-users, SIGNING_KEY (run server-infra/scripts/gen-signing-key.sh), registry, DNS records, 公安备案, 公众号, webmaster accounts.
+      Environments staging/production, CLAUDE_CODE_OAUTH_TOKEN (done), SIGNING_KEY (run server-infra/scripts/gen-signing-key.sh), DNS records, 公安备案, 公众号, webmaster accounts. (No JD object storage needed: releases come from GitHub Releases.)
   - title: "Owner: apply server-infra on the server (runbook Stage 3)"
     milestone: "M3 Ops & launch"
     labels: [owner-task]
