@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import { localePath, locales, ui, type Locale } from '../i18n/ui';
+interface Props { locale: Locale; slug: string; alternates: Locale[] }
+const { locale, slug, alternates } = Astro.props;
+const t = ui[locale];
+const links: [string, string][] = [
+  ['services/', t.nav.services], ['solutions/eu-launch-kit/', t.nav.solution], ['cases/', t.nav.cases],
+  ['labs/', t.nav.labs], ['insights/', t.nav.insights], ['about/', t.nav.about],
+];
+const deOnly = locale === 'de';
+const shown = deOnly ? links.filter(([s]) => s === 'services/') : links;
+const langHref = (l: Locale) => localePath(l, alternates.includes(l) ? slug : '');
+const short: Record<Locale, string> = { zh: '中', en: 'EN', de: 'DE' };
+---
+<header class="sticky top-0 z-40 backdrop-blur-md bg-[#070b16]/80 border-b border-white/5">
+  <div class="mx-auto max-w-7xl px-5 h-16 flex items-center justify-between gap-6">
+    <a href={localePath(locale, '')} aria-label="Synaping home"><Logo size={34} zh={locale === 'zh'} /></a>
+    <nav class="hidden lg:flex items-center gap-7 text-sm text-slate-300" aria-label="Main">
+      {shown.map(([s, label]) => <a href={localePath(locale, s)} class:list={['hover:text-white transition-colors', slug.startsWith(s) && 'text-white']}>{label}</a>)}
+    </nav>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex rounded-lg border border-slate-700 text-xs overflow-hidden shrink-0" role="group" aria-label="Language">
+        {locales.map((l) => <a href={langHref(l)} hreflang={l} lang={l} class:list={['px-2 sm:px-2.5 py-1.5', l === locale ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white']} aria-current={l === locale ? 'true' : undefined}>{short[l]}</a>)}
+      </div>
+      <a href={localePath(locale, 'contact/')} class="hidden sm:inline-flex btn-primary !py-2 !px-4 text-sm">{t.ctaShort}</a>
+      <details class="lg:hidden relative">
+        <summary class="list-none cursor-pointer p-2 rounded-lg border border-slate-700 text-sm text-slate-200" aria-label={t.menu}>☰</summary>
+        <nav class="absolute right-0 mt-2 w-56 card p-3 flex flex-col gap-1 text-sm" aria-label="Mobile">
+          {shown.map(([s, label]) => <a href={localePath(locale, s)} class="px-3 py-2 rounded hover:bg-white/5">{label}</a>)}
+          <a href={localePath(locale, 'contact/')} class="px-3 py-2 rounded hover:bg-white/5 text-cyan-300">{t.nav.contact}</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

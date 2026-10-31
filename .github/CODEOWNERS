@@ -1,0 +1,13 @@
+# Owner review required for config, tests, facts and legal text (enforced by path-check + branch ruleset)
+/.github/                  @wang-yuhao
+/api/                      @wang-yuhao
+/CLAUDE.md                 @wang-yuhao
+/docs/content-facts.md     @wang-yuhao
+/package.json              @wang-yuhao
+/pnpm-lock.yaml            @wang-yuhao
+/astro.config.mjs          @wang-yuhao
+/playwright.config.ts      @wang-yuhao
+/lighthouserc.json         @wang-yuhao
+/tests/                    @wang-yuhao
+/scripts/ad-law-check.mjs  @wang-yuhao
+/src/content/legal.ts      @wang-yuhao

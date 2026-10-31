@@ -1,0 +1,74 @@
+---
+// Single router: every (locale, page) pair is generated here so zh lives at "/" and en/de under a prefix.
+import Base from '../layouts/Base.astro';
+import Home from '../views/Home.astro';
+import Services from '../views/Services.astro';
+import ServiceDetail from '../views/ServiceDetail.astro';
+import Kit from '../views/Kit.astro';
+import Cases from '../views/Cases.astro';
+import CaseDetail from '../views/CaseDetail.astro';
+import Labs from '../views/Labs.astro';
+import LabDetail from '../views/LabDetail.astro';
+import Insights from '../views/Insights.astro';
+import InsightDetail from '../views/InsightDetail.astro';
+import About from '../views/About.astro';
+import Contact from '../views/Contact.astro';
+import Legal from '../views/Legal.astro';
+import { getCollection } from 'astro:content';
+import { services, cases, labs, home, kit, about, contact } from '../content/site';
+import { privacy, notice } from '../content/legal';
+import { dePages, type Locale } from '../i18n/ui';
+
+export async function getStaticPaths() {
+  type Page = { slug: string; view: string; title: Partial<Record<Locale, string>>; desc: Partial<Record<Locale, string>>; data?: any; langs: Locale[] };
+  const both: Locale[] = ['zh', 'en'];
+  const all: Locale[] = ['zh', 'en', 'de'];
+  const sfx = { zh: ' | 惟意科技 Synaping', en: ' | Synaping', de: ' | Synaping' };
+  const pages: Page[] = [
+    { slug: '', view: 'home', title: { zh: home.zh.title, en: home.en.title, de: home.de.title }, desc: { zh: home.zh.description, en: home.en.description, de: home.de.description }, langs: all },
+    { slug: 'services/', view: 'services', title: { zh: '服务' + sfx.zh, en: 'Services' + sfx.en, de: 'Leistungen' + sfx.de }, desc: { zh: '出海官网与数字化产品、数据与智能工程、云与数据合规架构。', en: 'Websites & digital products, data & AI engineering, cloud & compliance architecture.', de: 'Websites & digitale Produkte, Data & AI Engineering, Cloud- & Compliance-Architektur.' }, langs: all },
+    ...services.map((s) => ({ slug: `services/${s.slug}/`, view: 'service', data: s, title: { zh: s.title.zh + sfx.zh, en: s.title.en + sfx.en }, desc: { zh: s.short.zh, en: s.short.en }, langs: both })),
+    { slug: 'solutions/eu-launch-kit/', view: 'kit', title: { zh: kit.zh.title + sfx.zh, en: kit.en.title + sfx.en }, desc: { zh: kit.zh.lead, en: kit.en.lead }, langs: both },
+    { slug: 'cases/', view: 'cases', title: { zh: '案例' + sfx.zh, en: 'Cases' + sfx.en }, desc: { zh: '惟意科技交付的网站、云与数据项目。', en: 'Website, cloud and data projects delivered by Synaping.' }, langs: both },
+    ...cases.map((c) => ({ slug: `cases/${c.slug}/`, view: 'case', data: c, title: { zh: c.title.zh + sfx.zh, en: c.title.en + sfx.en }, desc: { zh: c.summary.zh, en: c.summary.en }, langs: both })),
+    { slug: 'labs/', view: 'labs', title: { zh: '研发实验室' + sfx.zh, en: 'Labs' + sfx.en }, desc: { zh: '量化研究工程与科研数据平台实践。', en: 'Quant-research engineering and scientific data platforms.' }, langs: both },
+    ...labs.map((l) => ({ slug: `labs/${l.slug}/`, view: 'lab', data: l, title: { zh: l.title.zh + sfx.zh, en: l.title.en + sfx.en }, desc: { zh: l.summary.zh, en: l.summary.en }, langs: both })),
+    { slug: 'insights/', view: 'insights', title: { zh: '洞察' + sfx.zh, en: 'Insights' + sfx.en }, desc: { zh: '出海技术、数据平台与合规工程实践笔记。', en: 'Notes on going global, data platforms and compliance engineering.' }, langs: both },
+    { slug: 'about/', view: 'about', title: { zh: about.zh.title + sfx.zh, en: about.en.title + sfx.en }, desc: { zh: about.zh.lead, en: about.en.lead }, langs: both },
+    { slug: 'contact/', view: 'contact', title: { zh: contact.zh.title + sfx.zh, en: contact.en.title + sfx.en, de: contact.de.title + sfx.de }, desc: { zh: contact.zh.lead, en: contact.en.lead, de: contact.de.lead }, langs: all },
+    { slug: 'legal/privacy/', view: 'privacy', title: { zh: privacy.zh.title + sfx.zh, en: privacy.en.title + sfx.en, de: privacy.de.title + sfx.de }, desc: { zh: privacy.zh.title, en: privacy.en.title, de: privacy.de.title }, langs: all },
+    { slug: 'legal/notice/', view: 'notice', title: { zh: notice.zh.title + sfx.zh, en: notice.en.title + sfx.en, de: notice.de.title + sfx.de }, desc: { zh: notice.zh.title, en: notice.en.title, de: notice.de.title }, langs: all },
+  ];
+  const posts = await getCollection('insights', (p) => !p.data.draft);
+  for (const p of posts) {
+    pages.push({ slug: `insights/${p.data.slug}/`, view: 'post', data: p, title: { [p.data.lang]: p.data.title + sfx[p.data.lang as Locale] }, desc: { [p.data.lang]: p.data.description }, langs: [p.data.lang] });
+  }
+  const out = [];
+  for (const pg of pages) {
+    for (const locale of pg.langs) {
+      if (locale === 'de' && !dePages.has(pg.slug)) continue;
+      const path = (locale === 'zh' ? '' : locale + '/') + pg.slug;
+      out.push({ params: { path: path.replace(/\/$/, '') || undefined }, props: { locale, pg } });
+    }
+  }
+  return out;
+}
+const { locale, pg } = Astro.props as { locale: Locale; pg: any };
+const zhEn = locale as 'zh' | 'en';
+---
+<Base locale={locale} slug={pg.slug} title={pg.title[locale]} description={pg.desc[locale]} alternates={pg.langs.filter((l: Locale) => l !== 'de' || dePages.has(pg.slug))}>
+  {pg.view === 'home' && <Home locale={locale} />}
+  {pg.view === 'services' && <Services locale={locale} />}
+  {pg.view === 'service' && <ServiceDetail locale={locale} service={pg.data} />}
+  {pg.view === 'kit' && <Kit locale={zhEn} />}
+  {pg.view === 'cases' && <Cases locale={zhEn} />}
+  {pg.view === 'case' && <CaseDetail locale={zhEn} item={pg.data} />}
+  {pg.view === 'labs' && <Labs locale={zhEn} />}
+  {pg.view === 'lab' && <LabDetail locale={zhEn} item={pg.data} />}
+  {pg.view === 'insights' && <Insights locale={zhEn} />}
+  {pg.view === 'post' && <InsightDetail locale={zhEn} entry={pg.data} />}
+  {pg.view === 'about' && <About locale={zhEn} />}
+  {pg.view === 'contact' && <Contact locale={locale} />}
+  {pg.view === 'privacy' && <Legal locale={locale} kind="privacy" />}
+  {pg.view === 'notice' && <Legal locale={locale} kind="notice" />}
+</Base>

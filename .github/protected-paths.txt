@@ -1,0 +1,12 @@
+^\.github/
+^api/
+^CLAUDE\.md$
+^docs/content-facts\.md$
+^package\.json$
+^pnpm-lock\.yaml$
+^astro\.config\.
+^playwright\.config\.
+^lighthouserc
+^tests/
+^scripts/ad-law-check\.mjs$
+^src/content/legal\.ts$

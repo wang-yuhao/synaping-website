@@ -1,0 +1,20 @@
+---
+import PageHead from './PageHead.astro';
+import { getCollection } from 'astro:content';
+import { localePath } from '../i18n/ui';
+interface Props { locale: 'zh' | 'en' }
+const { locale } = Astro.props;
+const posts = (await getCollection('insights', (p) => !p.data.draft && p.data.lang === locale)).sort((a, b) => +b.data.date - +a.data.date);
+const T = { zh: { t: '洞察', l: '关于出海技术、数据平台与合规工程的实践笔记。', e: '首批文章正在审校中，即将发布。' }, en: { t: 'Insights', l: 'Field notes on going global, data platforms and compliance engineering.', e: 'Our first articles are in review and will be published soon.' } }[locale];
+---
+<PageHead kicker="Insights" title={T.t} lead={T.l} />
+<section class="mx-auto max-w-4xl px-5 py-16 grid gap-6">
+  {posts.length === 0 && <p class="card p-8 text-slate-300">{T.e}</p>}
+  {posts.map((p) => (
+    <a href={localePath(locale, `insights/${p.data.slug}/`)} class="card p-7 block">
+      <time class="text-xs text-slate-500" datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
+      <h2 class="mt-2 text-xl font-semibold text-white">{p.data.title}</h2>
+      <p class="mt-2 text-slate-400">{p.data.description}</p>
+    </a>
+  ))}
+</section>

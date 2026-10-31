@@ -1,0 +1,119 @@
+labels:
+  - { name: ready, color: "22d3ee", description: "Claude may pick this up tonight" }
+  - { name: in-progress, color: "a78bfa", description: "Being worked on by the nightly run" }
+  - { name: blocked, color: "6b7280", description: "Waiting for something outside the repo" }
+  - { name: decision-needed, color: "f59e0b", description: "Owner must decide; Claude stopped" }
+  - { name: owner-review, color: "ef4444", description: "Touches protected paths; owner must review" }
+  - { name: owner-task, color: "f97316", description: "Only the owner can do this (accounts, keys, filings)" }
+  - { name: needs-review, color: "eab308", description: "Machine-drafted copy to proofread" }
+  - { name: report, color: "0ea5e9", description: "Daily morning report" }
+  - { name: backlog, color: "94a3b8", description: "Idea for later" }
+  - { name: hold, color: "111827", description: "Do not auto-merge" }
+milestones:
+  - { title: "M1 Quality", description: "Polish, SEO, a11y, performance — fully autonomous" }
+  - { title: "M2 Content", description: "Copy and facts — needs owner input" }
+  - { title: "M3 Ops & launch", description: "Server, pipeline, filings, go-live" }
+issues:
+  # ---------- M1: fully autonomous ----------
+  - title: "SEO: Service, FAQPage, Article and BreadcrumbList JSON-LD"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Add structured data: Service + FAQPage on service detail pages, BreadcrumbList on all non-home pages, Article on insights.
+      Done when: Google Rich Results test passes for /services/data-ai-engineering/ (validate JSON with a unit test); no visual change.
+  - title: "Performance: image budget check (≤150 KB each)"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Images are already JPEG; check they stay ≤150 KB and add width/height + lazy loading where images appear.
+      Done when: files ≤150 KB, visually equivalent.
+  - title: "Accessibility pass: contrast, focus order, form labels"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Audit all pages with axe (locally) and fix serious/critical issues in components (not tests). Check text-slate-500 contrast on dark backgrounds.
+      Done when: Lighthouse accessibility ≥ 95 on the 4 pages in lighthouserc.json.
+  - title: "Brand page /brand/ with 3 logo concepts (noindex)"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Create src/pages/brand.astro (noindex, not in nav/sitemap) showing the current monogram plus 2 alternative SVG concepts (same palette), wordmark in zh/en, colour tokens and type scale.
+      Done when: owner can compare concepts at /brand/ on staging. Owner picks in a comment.
+  - title: "Translate insight drafts to English (dual-region, backtesting)"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Add en versions of src/content/insights/zh-dual-region.md and zh-backtesting.md as drafts (draft: true), label PR needs-review.
+  - title: "Umami analytics include (env-gated, first-party)"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Add an optional script tag in Base.astro rendered only when PUBLIC_UMAMI_WEBSITE_ID is set at build time, loading from https://stats.synaping.com/script.js with data-domains="www.synaping.com". No cookies. Update the e2e third-party test to allow stats.synaping.com only.
+      Note: tests/ is protected — the PR will need owner-review.
+  - title: "Contact page: per-locale success state and spam message copy"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Improve the form UX: disable the submit button while sending, show a success panel replacing the form, and a clear 429 message. zh/en/de.
+  - title: "Home: subtle Shanghai ⇄ München data-flow line (abstract, no map)"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Add an abstract animated line between two labelled nodes (Shanghai, München) in the EU Launch Kit band. No map shapes (审图号 rule). Respect reduced motion. ≤3 KB JS or pure SVG/CSS.
+  - title: "README: local dev, architecture and release flow"
+    milestone: "M1 Quality"
+    labels: [ready]
+    body: |
+      Expand README.md with commands, folder map, how nightly/automerge/publish/promote work, and how to pause automation (NIGHTLY_ENABLED=false).
+  # ---------- M2: needs owner facts ----------
+  - title: "Owner: confirm content facts (prices, phones, legal representative, English company name)"
+    milestone: "M2 Content"
+    labels: [owner-task]
+    body: |
+      Edit docs/content-facts.md and replace every 【待确认】. Claude then updates the site in a follow-up issue.
+  - title: "Owner: proofread German pages (/de/, services, contact, legal)"
+    milestone: "M2 Content"
+    labels: [owner-task, needs-review]
+    body: Read the German pages on staging and comment corrections here (or edit src/content/site.ts directly).
+  - title: "Owner: review and publish insight drafts"
+    milestone: "M2 Content"
+    labels: [owner-task]
+    body: Edit the drafts in src/content/insights/, then set draft:false on the ones to publish.
+  - title: "Real WeChat QR on contact page"
+    milestone: "M2 Content"
+    labels: [blocked]
+    body: Replace public/wechat-qr.svg with the real QR (owner uploads the image to this issue). Blocked until the image is attached.
+  - title: "Team section with consented members"
+    milestone: "M2 Content"
+    labels: [blocked]
+    body: Add team members listed as consented in docs/content-facts.md. Blocked until the owner lists them.
+  - title: "Owner: legal review of privacy policy and legal notice"
+    milestone: "M2 Content"
+    labels: [owner-task]
+    body: Send /legal/privacy/ and /legal/notice/ (zh/en/de) to a lawyer; apply changes in src/content/legal.ts and remove the draft banner.
+  # ---------- M3: ops & launch ----------
+  - title: "Owner: Phase 0a server safety + TLS (see runbook Stage 1)"
+    milestone: "M3 Ops & launch"
+    labels: [owner-task]
+    body: Snapshot, close ports 8081/3001/9090/8000, acme.sh certificate, coming-soon page, credential rotation. Runbook Stage 1.
+  - title: "Owner: accounts and keys (runbook Stage 2)"
+    milestone: "M3 Ops & launch"
+    labels: [owner-task]
+    body: |
+      Repo settings (allow auto-merge, environments staging/production), CLAUDE_CODE_OAUTH_TOKEN, JD OSS bucket + sub-users, SIGNING_KEY (run server-infra/scripts/gen-signing-key.sh), registry, DNS records, 公安备案, 公众号, webmaster accounts.
+  - title: "Owner: apply server-infra on the server (runbook Stage 3)"
+    milestone: "M3 Ops & launch"
+    labels: [owner-task]
+    body: Clone server-infra on the server, run scripts/bootstrap.sh then scripts/migrate-edge.sh; verify both sites.
+  - title: "WeChat JS-SDK share cards"
+    milestone: "M3 Ops & launch"
+    labels: [blocked]
+    body: Needs a verified 服务号 and its JS 接口安全域名 verification file. Blocked until the owner attaches them.
+  - title: "公安联网备案 number in footer"
+    milestone: "M3 Ops & launch"
+    labels: [blocked]
+    body: Add the 公网安备 number + emblem link (beian.mps.gov.cn) to Footer.astro once the owner posts the number here.
+  - title: "Owner: launch — promote to production and submit to search engines (runbook Stage 5)"
+    milestone: "M3 Ops & launch"
+    labels: [owner-task]
+    body: Run promote-prod, approve, verify, then Baidu/360/Sogou/Bing sitemaps and monitoring.

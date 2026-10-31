@@ -1,0 +1,9 @@
+---
+import PageHead from './PageHead.astro';
+import { render } from 'astro:content';
+interface Props { locale: 'zh' | 'en'; entry: any }
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<PageHead kicker={entry.data.date.toISOString().slice(0, 10)} title={entry.data.title} lead={entry.data.description} />
+<article class="mx-auto max-w-3xl px-5 py-16 prose-s"><Content /></article>

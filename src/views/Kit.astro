@@ -1,0 +1,32 @@
+---
+import Icon from '../components/Icon.astro';
+import PageHead from './PageHead.astro';
+import CtaBand from './CtaBand.astro';
+import { kit } from '../content/site';
+import { company, type Locale } from '../i18n/ui';
+interface Props { locale: 'zh' | 'en' }
+const { locale } = Astro.props;
+const k = kit[locale];
+---
+<PageHead kicker="EU Digital Launch Kit" title={k.title} lead={k.lead} />
+<section class="mx-auto max-w-7xl px-5 py-16 grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+  <div class="card p-8">
+    <h2 class="text-xl font-semibold text-white">{k.checklistTitle}</h2>
+    <ul class="mt-6 space-y-3 text-slate-300">{k.checklist.map((x) => <li class="flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{x}</li>)}</ul>
+  </div>
+  <div class="grid gap-4">
+    {k.tiers.map((tier, i) => (
+      <div class:list={['card p-6', i === 1 && 'border-cyan-400/50']}>
+        <div class="flex items-baseline justify-between"><h3 class="text-lg font-semibold text-white">{tier.name}</h3><span class="text-sm text-cyan-300">{tier.price}</span></div>
+        <p class="mt-2 text-sm text-slate-400">{tier.d}</p>
+      </div>
+    ))}
+  </div>
+</section>
+<section class="mx-auto max-w-7xl px-5">
+  <div class="card p-6 text-slate-300 flex flex-col md:flex-row gap-4 md:items-center justify-between">
+    <p>{k.partner}</p>
+    <a href={company.sisterSites[0].url} class="btn-ghost text-sm shrink-0" rel="noopener">{k.partnerLink}</a>
+  </div>
+</section>
+<CtaBand locale={locale as Locale} />

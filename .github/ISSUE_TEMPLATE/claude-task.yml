@@ -1,0 +1,15 @@
+name: Claude task
+description: A task for Claude Code to implement overnight
+labels: [ready]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What should change?, description: Page/route, what is wrong or missing }
+    validations: { required: true }
+  - type: textarea
+    id: done
+    attributes: { label: Done when (acceptance criteria) }
+    validations: { required: true }
+  - type: dropdown
+    id: size
+    attributes: { label: Size, options: [S (< 1 h), M (1–3 h), L (split it)] }

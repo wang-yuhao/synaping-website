@@ -1,0 +1,19 @@
+---
+import Icon from '../components/Icon.astro';
+import PageHead from './PageHead.astro';
+import CtaBand from './CtaBand.astro';
+import type { Case } from '../content/site';
+import type { Locale } from '../i18n/ui';
+interface Props { locale: 'zh' | 'en'; item: Case }
+const { locale, item: c } = Astro.props;
+const T = { zh: { ch: '挑战', ap: '方法', re: '结果' }, en: { ch: 'Challenge', ap: 'Approach', re: 'Result' } }[locale];
+---
+<PageHead kicker={c.tags.join(' · ')} title={c.title[locale]} lead={c.summary[locale]} />
+<section class="mx-auto max-w-4xl px-5 py-16 grid gap-8">
+  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.ch}</h2><p class="mt-3 text-slate-300 leading-relaxed">{c.challenge[locale]}</p></div>
+  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.ap}</h2>
+    <ol class="mt-5 grid gap-4 md:grid-cols-3">{c.approach[locale].map((a, i) => <li class="rounded-xl border border-slate-700 p-4"><span class="text-gradient font-semibold">0{i + 1}</span><p class="mt-2 text-sm text-slate-300">{a}</p></li>)}</ol>
+  </div>
+  <div class="card p-8"><h2 class="text-xl font-semibold text-white">{T.re}</h2><p class="mt-3 text-slate-300 leading-relaxed flex gap-3"><Icon name="check" class="w-5 h-5 shrink-0 text-cyan-300" />{c.result[locale]}</p></div>
+</section>
+<CtaBand locale={locale as Locale} />

@@ -1,0 +1,30 @@
+---
+// Synaping monogram: two nodes joined by an S-shaped arc; a pulse travels along it (a synapse firing).
+interface Props { size?: number; wordmark?: boolean; animate?: boolean; zh?: boolean }
+const { size = 36, wordmark = true, animate = true, zh = false } = Astro.props;
+const id = 'lg' + Math.round(size);
+---
+<span class="inline-flex items-center gap-2.5 select-none">
+  <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="Synaping">
+    <defs>
+      <linearGradient id={id} x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#22d3ee" /><stop offset="1" stop-color="#8b5cf6" />
+      </linearGradient>
+    </defs>
+    <path id={`${id}-p`} d="M12 36 C 4 22, 44 26, 36 12" fill="none" stroke={`url(#${id})`} stroke-width="4" stroke-linecap="round" />
+    <circle cx="12" cy="36" r="5.5" fill="#22d3ee" />
+    <circle cx="36" cy="12" r="5.5" fill="#8b5cf6" />
+    {animate && (
+      <circle r="2.6" fill="#ffffff" class="logo-pulse">
+        <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto"><mpath href={`#${id}-p`} /></animateMotion>
+      </circle>
+    )}
+  </svg>
+  {wordmark && (
+    <span class="leading-none">
+      <span class="block font-[family-name:var(--font-display)] text-[1.35rem] font-semibold tracking-tight text-white">synaping</span>
+      {zh && <span class="block text-[0.7rem] tracking-[0.35em] text-slate-400 mt-1">惟意科技</span>}
+    </span>
+  )}
+</span>
+<style>@media (prefers-reduced-motion: reduce){ .logo-pulse{ display:none } }</style>

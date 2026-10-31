@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.synaping.com/sitemap-index.xml
