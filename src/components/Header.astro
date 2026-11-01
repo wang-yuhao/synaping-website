@@ -15,7 +15,7 @@ const short: Record<Locale, string> = { zh: '中', en: 'EN', de: 'DE' };
 ---
 <header class="sticky top-0 z-40 backdrop-blur-md bg-[#070b16]/80 border-b border-white/5">
   <div class="mx-auto max-w-7xl px-5 h-16 flex items-center justify-between gap-6">
-    <a href={localePath(locale, '')} aria-label="Synaping home"><Logo size={34} zh={locale === 'zh'} /></a>
+    <a href={localePath(locale, '')}><Logo size={34} zh={locale === 'zh'} /></a>
     <nav class="hidden lg:flex items-center gap-7 text-sm text-slate-300" aria-label="Main">
       {shown.map(([s, label]) => <a href={localePath(locale, s)} class:list={['hover:text-white transition-colors', slug.startsWith(s) && 'text-white']}>{label}</a>)}
     </nav>
