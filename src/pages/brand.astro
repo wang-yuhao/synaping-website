@@ -1,0 +1,79 @@
+---
+// Internal brand comparison page: noindex, not in nav, excluded from sitemap (astro.config filter).
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+const colors = [
+  { n: 'ink-950', v: '#070b16' }, { n: 'ink-900', v: '#0b1220' }, { n: 'ink-800', v: '#111827' }, { n: 'ink-700', v: '#1f2937' },
+  { n: 'line', v: '#1e293b' }, { n: 'signal-400', v: '#22d3ee' }, { n: 'signal-300', v: '#67e8f9' },
+  { n: 'synapse-500', v: '#8b5cf6' }, { n: 'synapse-400', v: '#a78bfa' }, { n: 'ember-400', v: '#f59e0b' },
+];
+const scale = [
+  { n: 'Display / H1', c: 'text-5xl', f: 'display' }, { n: 'H2', c: 'text-3xl', f: 'display' },
+  { n: 'H3', c: 'text-xl', f: 'display' }, { n: 'Body', c: 'text-base', f: 'sans' }, { n: 'Small', c: 'text-sm', f: 'sans' },
+];
+---
+<Base locale="zh" slug="brand/" title="Brand | Synaping" description="Brand concepts (internal)" alternates={[]} noindex>
+  <div class="mx-auto max-w-5xl px-5 py-16">
+    <p class="kicker">internal · noindex</p>
+    <h1 class="mt-3 text-4xl font-semibold text-white">Brand concepts / 品牌方案</h1>
+    <p class="mt-3 text-slate-300">Compare three logo concepts, then pick one in a comment on issue #4. 请在 issue #4 评论中选择方案。</p>
+
+    <h2 class="mt-12 text-2xl font-semibold text-white">Logo concepts</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-3">
+      <div class="card p-6">
+        <p class="kicker">A · Current</p>
+        <div class="mt-5 flex h-28 items-center"><Logo size={64} wordmark={false} animate={false} /></div>
+        <p class="mt-4 text-sm text-slate-300">Two nodes joined by an S-shaped arc (synapse).</p>
+      </div>
+      <div class="card p-6">
+        <p class="kicker">B · Orbit</p>
+        <div class="mt-5 flex h-28 items-center">
+          <svg width="64" height="64" viewBox="0 0 48 48" role="img" aria-label="Synaping concept B">
+            <defs><linearGradient id="gb" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee" /><stop offset="1" stop-color="#8b5cf6" /></linearGradient></defs>
+            <circle cx="24" cy="24" r="16" fill="none" stroke="url(#gb)" stroke-width="3.5" />
+            <circle cx="24" cy="24" r="5" fill="#67e8f9" />
+            <circle cx="40" cy="24" r="4.5" fill="#8b5cf6" />
+          </svg>
+        </div>
+        <p class="mt-4 text-sm text-slate-300">A ring with a core and one satellite node.</p>
+      </div>
+      <div class="card p-6">
+        <p class="kicker">C · Bridge</p>
+        <div class="mt-5 flex h-28 items-center">
+          <svg width="64" height="64" viewBox="0 0 48 48" role="img" aria-label="Synaping concept C">
+            <defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee" /><stop offset="1" stop-color="#8b5cf6" /></linearGradient></defs>
+            <path d="M6 34 L24 14 L42 34" fill="none" stroke="url(#gc)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="6" cy="34" r="4.5" fill="#22d3ee" /><circle cx="24" cy="14" r="4.5" fill="#a78bfa" /><circle cx="42" cy="34" r="4.5" fill="#8b5cf6" />
+          </svg>
+        </div>
+        <p class="mt-4 text-sm text-slate-300">Three nodes forming a bridge between two markets.</p>
+      </div>
+    </div>
+
+    <h2 class="mt-14 text-2xl font-semibold text-white">Wordmark zh / en</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      <div class="card p-6"><p class="kicker">zh</p><div class="mt-4"><Logo size={44} zh animate={false} /></div></div>
+      <div class="card p-6"><p class="kicker">en</p><div class="mt-4"><Logo size={44} animate={false} /></div></div>
+    </div>
+
+    <h2 class="mt-14 text-2xl font-semibold text-white">Colour tokens</h2>
+    <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
+      {colors.map((c) => (
+        <div class="card overflow-hidden">
+          <div class="h-16" style={`background:${c.v}`}></div>
+          <div class="p-3 text-xs text-slate-300"><p class="font-mono-ui">{c.n}</p><p class="font-mono-ui text-slate-400">{c.v}</p></div>
+        </div>
+      ))}
+    </div>
+
+    <h2 class="mt-14 text-2xl font-semibold text-white">Type scale</h2>
+    <div class="card mt-6 divide-y divide-slate-800">
+      {scale.map((s) => (
+        <div class="flex flex-wrap items-baseline justify-between gap-3 p-5">
+          <span class={`${s.c} text-white ${s.f === 'display' ? 'font-[family-name:var(--font-display)] font-semibold' : ''}`}>惟意科技 Synaping</span>
+          <span class="font-mono-ui text-xs text-slate-400">{s.n} · {s.c} · {s.f === 'display' ? 'Space Grotesk' : 'Inter'}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</Base>
