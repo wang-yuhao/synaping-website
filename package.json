@@ -10,7 +10,8 @@
     "preview": "astro preview --port 4321",
     "check": "astro check",
     "test:e2e": "playwright test",
-    "lint:ad-law": "node scripts/ad-law-check.mjs"
+    "lint:ad-law": "node scripts/ad-law-check.mjs",
+    "lint:images": "node scripts/check-images.mjs"
   },
   "dependencies": {
     "astro": "^7.4.4",
