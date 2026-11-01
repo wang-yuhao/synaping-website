@@ -7,7 +7,7 @@ for (const path of pages) {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
     const external: string[] = [];
-    page.on('request', (r) => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && !u.protocol.startsWith('data')) external.push(r.url()); });
+    page.on('request', (r) => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1', 'stats.synaping.com'].includes(u.hostname) && !u.protocol.startsWith('data')) external.push(r.url()); });
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
     await expect(page.locator('h1')).toHaveCount(1);

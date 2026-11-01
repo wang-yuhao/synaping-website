@@ -18,6 +18,7 @@ jobs:
       - run: pnpm lint:ad-law
       - run: pnpm check
       - run: pnpm build
+        env: { PUBLIC_UMAMI_WEBSITE_ID: '${{ vars.UMAMI_WEBSITE_ID }}' }
       - name: Stamp build id (used by promote-prod to confirm the server switched)
         run: printf '{"sha":"%s","built":"%s"}\n' "$GITHUB_SHA" "$(date -u +%FT%TZ)" > dist/build.json
       - name: Size budget (≤300 KB per page HTML+CSS+JS excluding fonts/images)
