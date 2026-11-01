@@ -1,5 +1,6 @@
 ---
 import PageHead from './PageHead.astro';
+import Icon from '../components/Icon.astro';
 import { contact } from '../content/site';
 import { company, localePath, ui, type Locale } from '../i18n/ui';
 interface Props { locale: Locale }
@@ -10,7 +11,14 @@ const input = 'mt-1.5 w-full rounded-lg border border-slate-700 bg-[#0b1220] px-
 ---
 <PageHead kicker={ui[locale].nav.contact} title={c.title} lead={c.lead} />
 <section class="mx-auto max-w-7xl px-5 py-16 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-  <form id="contact-form" class="card p-8 grid gap-5 sm:grid-cols-2" data-ok={c.ok} data-fail={c.fail} data-email={company.email} novalidate>
+  <div class="min-w-0">
+  <div id="form-done" class="card card-glow p-8" hidden>
+    <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-emerald-400/15 text-emerald-300"><Icon name="check" /></span>
+    <h2 id="form-done-title" tabindex="-1" class="mt-5 text-2xl font-semibold text-white">{c.okTitle}</h2>
+    <p class="mt-3 text-slate-300 leading-relaxed">{c.okBody}</p>
+    <button id="form-again" type="button" class="mt-7 btn-ghost">{c.again}</button>
+  </div>
+  <form id="contact-form" class="card p-8 grid gap-5 sm:grid-cols-2" data-fail={c.fail} data-too-many={c.tooMany} data-sending={c.sending} data-email={company.email} novalidate>
     <label class="text-sm text-slate-300">{f.name} *<input name="name" required maxlength="80" autocomplete="name" class={input} /></label>
     <label class="text-sm text-slate-300">{f.company}<input name="company" maxlength="120" autocomplete="organization" class={input} /></label>
     <label class="text-sm text-slate-300">{f.email} *<input name="email" type="email" required maxlength="120" autocomplete="email" class={input} /></label>
@@ -22,8 +30,9 @@ const input = 'mt-1.5 w-full rounded-lg border border-slate-700 bg-[#0b1220] px-
     <input name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
     <input name="locale" type="hidden" value={locale} />
     <label class="sm:col-span-2 flex gap-3 text-sm text-slate-400 leading-relaxed"><input name="consent" type="checkbox" required class="mt-1 accent-cyan-400" /><span>{c.consent} <a class="text-cyan-300 underline" href={localePath(locale, 'legal/privacy/')}>{ui[locale].privacy}</a></span></label>
-    <div class="sm:col-span-2 flex items-center gap-4"><button type="submit" class="btn-primary">{c.submit}</button><p id="form-status" class="text-sm text-slate-300" role="status" aria-live="polite"></p></div>
+    <div class="sm:col-span-2 flex flex-wrap items-center gap-4"><button type="submit" class="btn-primary disabled:opacity-60 disabled:cursor-wait">{c.submit}</button><p id="form-status" class="text-sm text-slate-300" role="status" aria-live="polite"></p></div>
   </form>
+</div>
   <aside class="space-y-6">
     <div class="card p-7">
       <h2 class="text-lg font-semibold text-white">{c.channels}</h2>
@@ -42,19 +51,33 @@ const input = 'mt-1.5 w-full rounded-lg border border-slate-700 bg-[#0b1220] px-
 <script>
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const status = document.getElementById('form-status');
+  const done = document.getElementById('form-done');
   const started = Date.now();
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!form.reportValidity() || !status) return;
+    if (!form.reportValidity() || !status || !done) return;
+    const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
+    const label = btn.textContent;
     const data = Object.fromEntries(new FormData(form).entries());
     (data as any).elapsed_ms = Date.now() - started;
     (data as any).consent = (form.elements.namedItem('consent') as HTMLInputElement).checked;
+    btn.disabled = true; btn.textContent = form.dataset.sending!; form.setAttribute('aria-busy', 'true'); status.textContent = '';
+    const mail = `<a class="underline text-cyan-300" href="mailto:${form.dataset.email}">${form.dataset.email}</a>`;
     try {
       const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      if (r.status === 429) { status.innerHTML = `${form.dataset.tooMany} ${mail}`; return; }
       if (!r.ok) throw new Error(String(r.status));
-      status.textContent = form.dataset.ok!; form.reset();
+      form.reset(); form.hidden = true; done.hidden = false;
+      document.getElementById('form-done-title')?.focus();
     } catch {
-      status.innerHTML = `${form.dataset.fail} <a class="underline text-cyan-300" href="mailto:${form.dataset.email}">${form.dataset.email}</a>`;
+      status.innerHTML = `${form.dataset.fail} ${mail}`;
+    } finally {
+      btn.disabled = false; btn.textContent = label; form.removeAttribute('aria-busy');
     }
+  });
+  document.getElementById('form-again')?.addEventListener('click', () => {
+    if (!form || !done) return;
+    done.hidden = true; form.hidden = false;
+    (form.elements.namedItem('name') as HTMLInputElement | null)?.focus();
   });
 </script>
