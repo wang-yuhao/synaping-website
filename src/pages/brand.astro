@@ -1,0 +1,90 @@
+---
+// Internal brand board for the owner to compare logo concepts. noindex, not linked, excluded from the sitemap.
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+
+const concepts = [
+  { k: 'A', name: '当前 · Synapse arc', d: '两个节点由 S 形弧线连接，脉冲沿弧线移动（突触放电）。现网使用。' },
+  { k: 'B', name: '备选 · Network S', d: '三个节点组成折线 S，暗示数据流与网络；小尺寸下轮廓更清晰。' },
+  { k: 'C', name: '备选 · Synaptic gap', d: '两段相对的弧线之间留出间隙，中间一点信号跨越——“连接”与“惟意”的专注。' },
+];
+const sizes = [96, 48, 24];
+const swatches = [
+  { n: 'ink-950', v: '#070b16' }, { n: 'ink-900', v: '#0b1220' }, { n: 'line', v: '#1e293b' },
+  { n: 'signal-400', v: '#22d3ee' }, { n: 'signal-300', v: '#67e8f9' },
+  { n: 'synapse-500', v: '#8b5cf6' }, { n: 'synapse-400', v: '#a78bfa' }, { n: 'ember-400', v: '#f59e0b' },
+];
+const scale = [
+  { c: 'text-6xl', px: '60', s: '惟意科技 Synaping' },
+  { c: 'text-4xl', px: '36', s: '让中国企业更从容地走向欧洲' },
+  { c: 'text-2xl', px: '24', s: 'Data & AI Engineering' },
+  { c: 'text-lg', px: '18', s: '正文 Body — Inter / PingFang SC' },
+  { c: 'text-sm', px: '14', s: '辅助文字 Caption · 2026' },
+];
+---
+<Base locale="zh" slug="brand/" title="Brand board | 惟意科技 Synaping" description="Internal brand concepts" alternates={[]} noindex>
+  <section class="mx-auto max-w-7xl px-5 py-16">
+    <p class="kicker">Internal · noindex</p>
+    <h1 class="mt-3 text-4xl font-semibold text-white">品牌标识方案对比</h1>
+    <p class="mt-4 max-w-3xl text-slate-300 leading-relaxed">同一配色下的三个图形方案，分别展示于深色与浅色背景及三种尺寸。请在对应 GitHub issue 中评论选择 A / B / C。</p>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-3">
+      {concepts.map((c) => (
+        <article class="card p-7 min-w-0">
+          <p class="font-mono-ui text-xs text-slate-400">方案 {c.k}</p>
+          <h2 class="mt-1 text-xl font-semibold text-white">{c.name}</h2>
+          <p class="mt-2 text-sm text-slate-400 leading-relaxed">{c.d}</p>
+          {[['bg-[#070b16]', 'dark'], ['bg-slate-50', 'light']].map(([bg]) => (
+            <div class:list={['mt-5 rounded-xl border border-white/10 p-5 flex items-end gap-6', bg]}>
+              {sizes.map((s) => (
+                <svg width={s} height={s} viewBox="0 0 48 48" aria-hidden="true">
+                  <defs><linearGradient id={`g${c.k}${s}${bg.length}`} x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee" /><stop offset="1" stop-color="#8b5cf6" /></linearGradient></defs>
+                  {c.k === 'A' && <>
+                    <path d="M12 36 C 4 22, 44 26, 36 12" fill="none" stroke={`url(#g${c.k}${s}${bg.length})`} stroke-width="4" stroke-linecap="round" />
+                    <circle cx="12" cy="36" r="5.5" fill="#22d3ee" /><circle cx="36" cy="12" r="5.5" fill="#8b5cf6" />
+                  </>}
+                  {c.k === 'B' && <>
+                    <path d="M34 10 L14 18 L34 30 L14 38" fill="none" stroke={`url(#g${c.k}${s}${bg.length})`} stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="34" cy="10" r="4.5" fill="#8b5cf6" /><circle cx="14" cy="18" r="3.5" fill="#67e8f9" /><circle cx="34" cy="30" r="3.5" fill="#a78bfa" /><circle cx="14" cy="38" r="4.5" fill="#22d3ee" />
+                  </>}
+                  {c.k === 'C' && <>
+                    <path d="M8 38 C 8 22, 16 14, 21 14" fill="none" stroke="#22d3ee" stroke-width="4.5" stroke-linecap="round" />
+                    <path d="M40 10 C 40 26, 32 34, 27 34" fill="none" stroke="#8b5cf6" stroke-width="4.5" stroke-linecap="round" />
+                    <circle cx="24" cy="24" r="3.5" fill={`url(#g${c.k}${s}${bg.length})`} />
+                  </>}
+                </svg>
+              ))}
+            </div>
+          ))}
+        </article>
+      ))}
+    </div>
+
+    <h2 class="mt-20 text-2xl font-semibold text-white">字标组合 · Wordmark</h2>
+    <div class="mt-6 grid gap-6 md:grid-cols-2">
+      <div class="card p-8"><Logo size={44} zh animate={false} /><p class="mt-4 text-xs text-slate-400">中文站 · zh</p></div>
+      <div class="card p-8"><Logo size={44} animate={false} /><p class="mt-4 text-xs text-slate-400">English / Deutsch</p></div>
+    </div>
+
+    <h2 class="mt-20 text-2xl font-semibold text-white">色彩 · Colour tokens</h2>
+    <ul class="mt-6 grid gap-4 grid-cols-2 sm:grid-cols-4">
+      {swatches.map((w) => (
+        <li class="card overflow-hidden">
+          <span class="block h-20" style={`background:${w.v}`}></span>
+          <span class="block p-3 font-mono-ui text-xs text-slate-300">{w.n}<br /><span class="text-slate-400">{w.v}</span></span>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="mt-20 text-2xl font-semibold text-white">字号 · Type scale</h2>
+    <p class="mt-2 text-sm text-slate-400">标题 Space Grotesk / 系统中文黑体；正文 Inter / 系统中文黑体（全部本地托管或系统字体，无第三方请求）。</p>
+    <div class="mt-6 card divide-y divide-white/5">
+      {scale.map((t) => (
+        <div class="p-5 flex items-baseline gap-6 min-w-0">
+          <span class="w-20 shrink-0 font-mono-ui text-xs text-slate-400">{t.px}px</span>
+          <span class:list={[t.c, 'font-[family-name:var(--font-display)] font-semibold text-white truncate']}>{t.s}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
