@@ -90,7 +90,7 @@ const e = engagement[locale];
 {full && (
 <section class="mx-auto max-w-7xl px-5 py-20">
   <SectionHead kicker="03 · Cases" title={h.casesTitle} />
-  <div class="mt-10 grid gap-6 md:grid-cols-3">
+  <div class="mt-10 grid gap-6 md:grid-cols-2">
     {cases.map((c) => (
       <a href={localePath(locale, `cases/${c.slug}/`)} class="card p-7 flex flex-col min-w-0 transition-colors group">
         <div class="flex gap-2">{c.tags.map((tg) => <span class="chip !text-[11px]">{tg}</span>)}</div>

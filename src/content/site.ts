@@ -58,7 +58,7 @@ export const services: Service[] = [
         { t: 'Conversion', items: ['Lead-form API', 'Email / CRM notification', 'Inquiry dashboard'] },
       ],
     },
-    related: [{ kind: 'case', slug: 'weiyi-international' }, { kind: 'case', slug: 'weiyiliuxue' }],
+    related: [{ kind: 'case', slug: 'synaping-ci-cd' }, { kind: 'case', slug: 'weiyiliuxue' }],
     stack: ['Astro', 'TypeScript', 'Tailwind CSS', 'React', 'Nginx', 'GitHub Actions', 'CDN'],
     faq: {
       zh: [
@@ -411,8 +411,6 @@ export const kit = {
     ],
     matrixTitle: '方案对比',
     matrix: ['三语官网', '欧洲主机与 CDN', '合规技术基线', '内容营销页面', 'SEO', '询盘自动化', '数据看板', '中欧双区域数据管道'],
-    partner: '需要市场调研、翻译、展会与商务谈判支持？我们的姐妹品牌惟意国际（Weiyi International）提供商务咨询服务。',
-    partnerLink: '了解惟意国际',
   },
   en: {
     title: 'EU Digital Launch Kit',
@@ -434,8 +432,6 @@ export const kit = {
     ],
     matrixTitle: 'Compare packages',
     matrix: ['Trilingual website', 'EU hosting and CDN', 'Compliance baseline', 'Content marketing pages', 'SEO', 'Lead automation', 'Dashboards', 'China–EU data pipeline'],
-    partner: 'Need market research, translation, trade fairs or negotiation support? Our sister brand Weiyi International provides business consulting.',
-    partnerLink: 'Visit Weiyi International',
   },
 };
 
@@ -468,32 +464,6 @@ export const cases: Case[] = [
     url: 'https://weiyiliuxue.com/',
     result: { zh: '网站已稳定运行，支持团队成员、服务与资讯页面的持续更新。', en: 'The site runs reliably and supports ongoing updates to team, service and news pages.' },
     tags: ['Web', 'Cloud', 'ICP'],
-  },
-  {
-    slug: 'weiyi-international',
-    title: { zh: '惟意国际：零第三方请求的双语企业官网', en: 'Weiyi International: bilingual corporate site with zero third-party requests' },
-    summary: { zh: '为出海咨询品牌打造的中英双语静态官网，字体与资源全部自托管。', en: 'A bilingual static site for a market-entry consulting brand, with all fonts and assets self-hosted.' },
-    challenge: { zh: '面向中欧两地客户，既要设计感，也要符合 GDPR 对第三方请求的要求。', en: 'Serve clients in China and Europe with a strong design while avoiding GDPR issues from third-party requests.' },
-    approach: {
-      zh: ['Astro 静态生成 + Tailwind CSS', '自托管字体，无谷歌字体或外部 CDN', 'hreflang、Open Graph 与结构化数据'],
-      en: ['Astro static generation + Tailwind CSS', 'Self-hosted fonts; no Google Fonts or external CDN', 'hreflang, Open Graph and structured data'],
-    },
-    arch: {
-      zh: [
-        { t: '内容', items: ['中英双语内容', 'hreflang 与 Open Graph', '结构化数据'] },
-        { t: '构建', items: ['Astro 静态生成', 'Tailwind CSS', '自托管字体'], tone: 'violet' },
-        { t: '发布', items: ['静态托管', '零第三方请求', '无 Cookie'], tone: 'amber' },
-      ],
-      en: [
-        { t: 'Content', items: ['Chinese and English content', 'hreflang and Open Graph', 'Structured data'] },
-        { t: 'Build', items: ['Astro static generation', 'Tailwind CSS', 'Self-hosted fonts'], tone: 'violet' },
-        { t: 'Publish', items: ['Static hosting', 'Zero third-party requests', 'No cookies'], tone: 'amber' },
-      ],
-    },
-    stack: ['Astro', 'TypeScript', 'Tailwind CSS'],
-    url: 'https://wang-yuhao.github.io/weiyi-international-website/',
-    result: { zh: '页面轻量、加载快，满足双语 SEO 与隐私要求。', en: 'Lightweight, fast pages that meet bilingual SEO and privacy requirements.' },
-    tags: ['Web', 'GDPR', 'SEO'],
   },
   {
     slug: 'synaping-ci-cd',
@@ -642,7 +612,7 @@ export const about = {
     lead: '惟意科技（Synaping）是上海惟意计划科技有限公司旗下的技术品牌，团队工作和生活在中国与德国两地。',
     story: [
       '我们在欧洲企业的数据平台、云架构与网站项目中积累了多年经验，也深知中国企业进入欧洲时面对的语言、合规与技术差异。',
-      '惟意科技专注技术实施：网站与数字产品、数据与 AI 工程、云与数据合规架构。市场调研、翻译与商务支持由姐妹品牌惟意国际提供，共同为客户提供从商务到技术的完整支持。',
+      '惟意科技专注技术实施：网站与数字产品、数据与 AI 工程、云与数据合规架构。',
     ],
     mission: '惟精惟诚，一心一意。',
     teamTitle: '团队',
@@ -669,7 +639,7 @@ export const about = {
     lead: 'Synaping (惟意科技) is the technology brand of Shanghai Weiyi Jihua Technology Co., Ltd., with people working in China and Germany.',
     story: [
       'We bring years of experience with data platforms, cloud architecture and websites for European enterprises, and we know the language, compliance and technical gaps Chinese companies face in Europe.',
-      'Synaping focuses on technical delivery: websites and digital products, data and AI engineering, and cloud and compliance architecture. Market research, translation and business support come from our sister brand Weiyi International.',
+      'Synaping focuses on technical delivery: websites and digital products, data and AI engineering, and cloud and compliance architecture.',
     ],
     mission: 'Precision and sincerity, with one focus.',
     teamTitle: 'Team',

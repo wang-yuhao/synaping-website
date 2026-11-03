@@ -58,9 +58,9 @@ const a = about[locale];
 </section>
 <section class="mx-auto max-w-6xl px-5 pt-16">
   <h2 class="text-2xl font-semibold text-white">{a.groupTitle}</h2>
-  <div class="mt-6 grid gap-4 sm:grid-cols-3">
+  <div class="mt-6 grid gap-4 sm:grid-cols-2">
     <div class="card p-6"><Logo size={28} zh animate={false} /><p class="mt-3 text-sm text-slate-400">{locale === 'zh' ? '技术实施' : 'Technology'}</p></div>
-    {company.sisterSites.map((s) => <a href={s.url} rel="noopener" class="card p-6 block"><p class="text-white font-semibold">{s.name}</p><p class="mt-3 text-sm text-slate-400">{s.url.includes('weiyiliuxue') ? (locale === 'zh' ? '留学服务' : 'Study abroad') : (locale === 'zh' ? '商务咨询' : 'Business consulting')}</p></a>)}
+    {company.sisterSites.map((s) => <a href={s.url} rel="noopener" class="card p-6 block"><p class="text-white font-semibold">{s.name}</p><p class="mt-3 text-sm text-slate-400">{s.desc[locale]}</p></a>)}
   </div>
 </section>
 <CtaBand locale={locale as Locale} />
