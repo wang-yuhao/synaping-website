@@ -24,8 +24,7 @@ export const company = {
   addressCn: '上海市松江区九亭镇易安小区12号502室',
   addressDe: 'Kidlerstr. 38, München, Deutschland',
   sisterSites: [
-    { name: 'Weiyi International 惟意国际', url: 'https://wang-yuhao.github.io/weiyi-international-website/' },
-    { name: '惟意留学', url: 'https://weiyiliuxue.com/' },
+    { name: '惟意留学', url: 'https://weiyiliuxue.com/', desc: { zh: '留学服务', en: 'Study abroad' } },
   ],
 };
 
